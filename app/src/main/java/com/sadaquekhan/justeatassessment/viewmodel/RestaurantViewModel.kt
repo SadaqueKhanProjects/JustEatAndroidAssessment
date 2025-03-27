@@ -3,17 +3,17 @@ package com.sadaquekhan.justeatassessment.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.justorder.app.data.repository.RestaurantRepository
+import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class RestaurantViewModel(
+open class RestaurantViewModel(
     private val repository: RestaurantRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantUiState())
-    val uiState: StateFlow<RestaurantUiState> = _uiState
+    open val uiState: StateFlow<RestaurantUiState> = _uiState
 
     fun fetchRestaurants(postcode: String) {
         viewModelScope.launch {
