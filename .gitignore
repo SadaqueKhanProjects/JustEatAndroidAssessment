@@ -21,3 +21,4 @@ local.properties
 .idea/navEditor.xml
 .idea/assetWizardSettings.xml
 .idea/vcs.xml  # added to ignore Git VCS config too
+.idea/misc.xml
