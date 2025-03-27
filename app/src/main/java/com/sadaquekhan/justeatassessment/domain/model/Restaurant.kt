@@ -6,3 +6,4 @@ data class Restaurant(
     val cuisineType: String,
     val eta: String
 )
+
