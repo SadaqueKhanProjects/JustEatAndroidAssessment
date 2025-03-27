@@ -1,4 +1,5 @@
-package com.justorder.app.viewmodel
+package com.sadaquekhan.justeatassessment.viewmodel
+
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

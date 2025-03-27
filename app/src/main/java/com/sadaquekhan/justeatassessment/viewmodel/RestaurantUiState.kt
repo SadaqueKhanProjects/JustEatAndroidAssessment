@@ -1,4 +1,5 @@
-package com.justorder.app.viewmodel
+package com.sadaquekhan.justeatassessment.viewmodel
+
 
 import com.justorder.app.domain.model.Restaurant
 

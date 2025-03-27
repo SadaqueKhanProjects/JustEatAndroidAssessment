@@ -1,4 +1,4 @@
-package com.justorder.app.domain.model
+package com.sadaquekhan.justeatassessment.domain.model
 
 data class Restaurant(
     val name: String,
