@@ -1,7 +1,8 @@
 package com.sadaquekhan.justeatassessment.viewmodel
 
 
-import com.justorder.app.domain.model.Restaurant
+
+import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
 data class RestaurantUiState(
     val isLoading: Boolean = false,
