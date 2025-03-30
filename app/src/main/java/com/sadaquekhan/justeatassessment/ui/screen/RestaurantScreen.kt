@@ -57,15 +57,26 @@ fun RestaurantScreen(viewModel: RestaurantViewModel = hiltViewModel()) {
 @Composable
 fun RestaurantItem(restaurant: Restaurant) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = restaurant.name, style = MaterialTheme.typography.titleMedium)
-            Text(text = "Cuisine: ${restaurant.cuisineType}", style = MaterialTheme.typography.bodySmall)
-            Text(text = "Rating: ${restaurant.rating}", style = MaterialTheme.typography.bodySmall)
-            Text(text = "ETA: ${restaurant.eta}", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = restaurant.name,
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = "Cuisine: ${restaurant.cuisineType}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "Rating: ${restaurant.rating}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = "ETA: ${restaurant.eta}",
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
