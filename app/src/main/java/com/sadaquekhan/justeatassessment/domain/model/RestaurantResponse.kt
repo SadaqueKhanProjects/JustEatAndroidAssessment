@@ -9,6 +9,6 @@ data class RestaurantDto(
     val name: String,
     val rating: Float,
     val cuisineType: String,
-    val eta: String
+    val address: String
 ) {
 }

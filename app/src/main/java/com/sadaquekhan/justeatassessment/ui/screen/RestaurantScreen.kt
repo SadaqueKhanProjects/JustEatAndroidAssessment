@@ -46,7 +46,7 @@ fun RestaurantScreen(viewModel: RestaurantViewModel = hiltViewModel()) {
                 .padding(16.dp)
         ) {
             // Iterate over the restaurant list from state
-            items(uiState.restaurants) { restaurant ->
+            items(uiState.restaurants.take(10)) { restaurant ->
                 RestaurantItem(restaurant = restaurant)
                 Spacer(modifier = Modifier.height(8.dp)) // Spacing between items
             }
@@ -74,7 +74,7 @@ fun RestaurantItem(restaurant: Restaurant) {
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "ETA: ${restaurant.eta}",
+                text = "ETA: ${restaurant.address}",
                 style = MaterialTheme.typography.bodySmall
             )
         }

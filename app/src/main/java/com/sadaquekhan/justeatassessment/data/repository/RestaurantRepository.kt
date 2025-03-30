@@ -15,7 +15,7 @@ class RestaurantRepository(private val api: RestaurantApiService) {
                 name = dto.name,
                 rating = dto.rating,
                 cuisineType = dto.cuisineType,
-                eta = dto.eta
+                address = dto.address
             )
         }
     }
