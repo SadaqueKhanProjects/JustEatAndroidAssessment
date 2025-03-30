@@ -1,11 +1,10 @@
+// Domain model representing a single restaurant
 package com.sadaquekhan.justeatassessment.domain.model
 
-
 data class Restaurant(
-    val id: String,               // ✅ Add this line
+    val id: String,
     val name: String,
-    val rating: Float,
+    val rating: Double,
     val cuisineType: String,
-    val eta: String
+    val address: String
 )
-
