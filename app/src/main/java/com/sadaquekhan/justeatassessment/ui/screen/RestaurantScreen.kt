@@ -74,9 +74,115 @@ fun RestaurantItem(restaurant: Restaurant) {
                 style = MaterialTheme.typography.bodySmall
             )
             Text(
-                text = "ETA: ${restaurant.address}",
+                text = "Address: ${restaurant.address}",
                 style = MaterialTheme.typography.bodySmall
             )
         }
+    }
+}
+
+// Preview-only UI showing mocked restaurants — safe to delete after development
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RestaurantScreenPreview() {
+    val mockRestaurants = listOf(
+        Restaurant(
+            id = "1",
+            name = "Mock Pizza Palace",
+            cuisineType = "Italian",
+            rating = 4.5,
+            address = "123 Mock Street"
+        ),
+        Restaurant(
+            id = "2",
+            name = "Sushi Mock House",
+            cuisineType = "Japanese",
+            rating = 4.8,
+            address = "456 Preview Lane"
+        ),
+        Restaurant(
+            id = "3",
+            name = "Burger Byte",
+            cuisineType = "American",
+            rating = 4.3,
+            address = "789 Burger Blvd"
+        ),
+        Restaurant(
+            id = "4",
+            name = "Curry Kingdom",
+            cuisineType = "Indian",
+            rating = 4.7,
+            address = "321 Spice Road"
+        ),
+        Restaurant(
+            id = "5",
+            name = "Dragon Dumplings",
+            cuisineType = "Chinese",
+            rating = 4.6,
+            address = "88 Lantern Ave"
+        ),
+        Restaurant(
+            id = "6",
+            name = "Taco Mocko",
+            cuisineType = "Mexican",
+            rating = 4.4,
+            address = "246 Salsa Street"
+        ),
+        Restaurant(
+            id = "7",
+            name = "Mock Thai Express",
+            cuisineType = "Thai",
+            rating = 4.2,
+            address = "135 Coconut Grove"
+        ),
+        Restaurant(
+            id = "8",
+            name = "Green Garden",
+            cuisineType = "Vegetarian",
+            rating = 4.1,
+            address = "101 Herb Lane"
+        ),
+        Restaurant(
+            id = "9",
+            name = "Mock Mediterranean",
+            cuisineType = "Greek",
+            rating = 4.5,
+            address = "77 Olive Way"
+        ),
+        Restaurant(
+            id = "10",
+            name = "BBQ Bonanza",
+            cuisineType = "Barbecue",
+            rating = 4.6,
+            address = "654 Smokehouse Drive"
+        )
+    )
+
+    // Directly pass mock list to UI without ViewModel
+    Scaffold(
+        topBar = {
+            TopAppBar(title = { Text("Preview: Restaurants") })
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            contentPadding = paddingValues,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            items(mockRestaurants) { restaurant ->
+                RestaurantItem(restaurant = restaurant)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+// Enables Android Studio Preview window
+@androidx.compose.ui.tooling.preview.Preview(showBackground = true)
+@Composable
+fun RestaurantScreenPreviewWrapper() {
+    com.sadaquekhan.justeatassessment.ui.theme.JustEatAndroidAssessmentTheme {
+        RestaurantScreenPreview()
     }
 }

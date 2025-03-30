@@ -7,7 +7,7 @@ data class RestaurantResponse(
 data class RestaurantDto(
     val id: String,
     val name: String,
-    val rating: Float,
+    val rating: Double,
     val cuisineType: String,
     val address: String
 ) {
