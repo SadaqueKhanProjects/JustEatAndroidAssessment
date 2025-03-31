@@ -1,7 +1,10 @@
 # 🍽️ JustEatAndroidAssessment
 
-A Kotlin-based Android app developed for the Just Eat Takeaway.com Early Careers Mobile Engineering Program.  
-This assignment demonstrates **API integration**, **MVVM architecture**, **Jetpack Compose UI**, and **agile-style planning** — focused on retrieving and displaying restaurant data based on a UK postcode.
+A Kotlin-based Android app developed for the Just Eat Takeaway.com Early Careers Mobile Engineering
+Program.  
+This assignment demonstrates **API integration**, **MVVM architecture**, **Jetpack Compose UI**,
+and **agile-style planning** — focused on retrieving and displaying restaurant data based on a UK
+postcode.
 
 ---
 
@@ -19,10 +22,10 @@ Using Just Eat’s API:
 
 - ✅ Fetch restaurant data for a given UK postcode
 - ✅ Extract and display 4 key data points:
-  - Restaurant Name
-  - Rating / Stars
-  - Cuisine Type
-  - Estimated Delivery Time
+    - Restaurant Name
+    - Rating / Stars
+    - Cuisine Type
+    - Estimated Delivery Time
 
 ---
 
@@ -30,7 +33,8 @@ Using Just Eat’s API:
 
 - 📁 Architecture Doc: [`docs/architecture.md`](docs/architecture.md)
 - 🧩 User Stories: [`docs/user_stories.md`](docs/user_stories.md)
-- 📋 Task Board: [Just Eat Assessment Board (GitHub Project)](https://github.com/SadaqueKhanProjects/JustEatAndroidAssessment/projects)
+- 📋 Task
+  Board: [Just Eat Assessment Board (GitHub Project)](https://github.com/SadaqueKhanProjects/JustEatAndroidAssessment/projects)
 
 ---
 

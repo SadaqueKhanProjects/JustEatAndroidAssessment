@@ -1,7 +1,6 @@
 package com.sadaquekhan.justeatassessment.viewmodel
 
 
-
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
 data class RestaurantUiState(

@@ -7,25 +7,23 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 object ApiClient {
 
-    // Base URL for Just Eat UK API
+    // Base URL for the Just Eat UK API
     private const val BASE_URL = "https://uk.api.just-eat.io/"
 
-    // Logging interceptor to help debug network requests
+    // Logging Interceptor to debug network requests
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY // Log full request/response
+        level = HttpLoggingInterceptor.Level.BODY
     }
 
-    // Create an OkHttpClient and attach the logging interceptor
+    // OkHttpClient with the logging interceptor
     private val client = OkHttpClient.Builder()
         .addInterceptor(loggingInterceptor)
         .build()
 
-    // Create the Retrofit instance
-    val retrofit: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL) // Set the API base URL
-            .addConverterFactory(MoshiConverterFactory.create()) // Use Moshi for JSON conversion
-            .client(client) // Attach custom OkHttp client
-            .build()
-    }
+    // Retrofit instance with Moshi converter
+    val retrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(client)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .build()
 }
