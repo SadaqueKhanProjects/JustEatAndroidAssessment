@@ -3,7 +3,7 @@ package com.sadaquekhan.justeatassessment
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.sadaquekhan.justeatassessment.ui.screen.RestaurantScreenPreviewWrapper // ⬅️ Import your preview wrapper
+import com.sadaquekhan.justeatassessment.ui.screen.RestaurantScreen
 import com.sadaquekhan.justeatassessment.ui.theme.JustEatAndroidAssessmentTheme
 
 class MainActivity : ComponentActivity() {
@@ -11,11 +11,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             JustEatAndroidAssessmentTheme {
-                // ✅ TEMPORARY: Replace this line:
-                // RestaurantScreen()
-
-                // ✅ WITH THIS:
-                RestaurantScreenPreviewWrapper()
+                // Main screen handles its own state and logic
+                RestaurantScreen()
             }
         }
     }

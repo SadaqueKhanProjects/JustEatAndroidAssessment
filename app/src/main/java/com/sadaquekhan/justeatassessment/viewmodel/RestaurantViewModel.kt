@@ -1,33 +1,35 @@
 package com.sadaquekhan.justeatassessment.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-open class RestaurantViewModel(
+@HiltViewModel
+class RestaurantViewModel @Inject constructor(
     private val repository: RestaurantRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantUiState())
-    open val uiState: StateFlow<RestaurantUiState> = _uiState
+    val uiState: StateFlow<RestaurantUiState> = _uiState.asStateFlow()
 
-    fun fetchRestaurants(postcode: String) {
+    fun loadRestaurants(postcode: String) {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true)
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             try {
-                val restaurants = repository.fetchRestaurants(postcode)
+                val restaurants = repository.getRestaurants(postcode)
                 _uiState.value = _uiState.value.copy(
                     restaurants = restaurants,
-                    isLoading = false,
-                    errorMessage = null
+                    isLoading = false
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    errorMessage = e.message,
+                    errorMessage = e.message ?: "Unknown error",
                     isLoading = false
                 )
             }
