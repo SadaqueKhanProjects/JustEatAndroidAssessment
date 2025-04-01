@@ -1,5 +1,6 @@
 package com.sadaquekhan.justeatassessment.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,6 +20,8 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
     var showError by remember { mutableStateOf(false) }
     val visibleCount = 10
 
+    Log.d("RestaurantScreen", "Current UI state contains ${uiState.restaurants.size} restaurants")
+
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         SearchBar(
             value = postcode,
@@ -28,9 +31,11 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
             },
             onSearch = {
                 if (postcode.trim().length >= 5) {
+                    Log.d("RestaurantScreen", "Triggering search for postcode: $postcode")
                     viewModel.loadRestaurants(postcode.trim().uppercase())
                     showError = false
                 } else {
+                    Log.d("RestaurantScreen", "Invalid postcode input: $postcode")
                     showError = true
                 }
             }
@@ -55,6 +60,7 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
             else -> {
                 LazyColumn {
                     items(uiState.restaurants.take(visibleCount)) { restaurant ->
+                        Log.d("RestaurantScreen", "Displaying restaurant: ${restaurant.name}")
                         RestaurantItem(restaurant = restaurant)
                     }
                 }
