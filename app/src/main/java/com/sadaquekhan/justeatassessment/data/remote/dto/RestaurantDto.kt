@@ -1,14 +1,12 @@
 package com.sadaquekhan.justeatassessment.data.remote.dto
 
-import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class RestaurantDto(
-    @Json(name = "Name") val name: String,
-    @Json(name = "CuisineTypes") val cuisineTypes: List<CuisineDto>,
-    @Json(name = "RatingStars") val rating: Double,
-    @Json(name = "Address") val address: AddressDto
-
+    val id: String,
+    val name: String,
+    val cuisines: List<CuisineDto>,
+    val rating: RatingDto,
+    val address: AddressDto
 )
-

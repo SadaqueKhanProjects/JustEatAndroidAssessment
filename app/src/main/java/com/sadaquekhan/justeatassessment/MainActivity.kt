@@ -3,23 +3,21 @@ package com.sadaquekhan.justeatassessment
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.sadaquekhan.justeatassessment.ui.screen.RestaurantScreen
 import com.sadaquekhan.justeatassessment.ui.theme.JustEatAndroidAssessmentTheme
+import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-// Enables Hilt dependency injection in this Activity
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    // Entry point of the app
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Set the Compose UI content
         setContent {
             JustEatAndroidAssessmentTheme {
-                // Load the main screen
-                RestaurantScreen()
+                val viewModel: RestaurantViewModel = hiltViewModel()
+                RestaurantScreen(viewModel = viewModel)
             }
         }
     }

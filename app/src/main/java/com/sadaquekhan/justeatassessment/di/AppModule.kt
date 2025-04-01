@@ -3,6 +3,7 @@ package com.sadaquekhan.justeatassessment.di
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepository
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepositoryImpl
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,26 +12,32 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
-// Hilt module to provide app-level dependencies.
 @Module
-@InstallIn(SingletonComponent::class) // Scope: entire app lifecycle
-object AppModule {
+@InstallIn(SingletonComponent::class)
+abstract class AppModule {
 
-    // Provides a singleton instance of the Retrofit API service.
+    @Binds
+    abstract fun bindRestaurantRepository(
+        impl: RestaurantRepositoryImpl
+    ): RestaurantRepository
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+
     @Provides
     @Singleton
-    fun provideRestaurantApiService(): RestaurantApiService {
+    fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://uk.api.just-eat.io/") // Just Eat API base URL
-            .addConverterFactory(MoshiConverterFactory.create()) // Converts JSON to Kotlin objects
+            .baseUrl("https://uk.api.just-eat.io/") // ✅ Correct base URL
+            .addConverterFactory(MoshiConverterFactory.create())
             .build()
-            .create(RestaurantApiService::class.java)
     }
 
-    // Provides a singleton RestaurantRepository, implementing its interface.
     @Provides
     @Singleton
-    fun provideRestaurantRepository(apiService: RestaurantApiService): RestaurantRepository {
-        return RestaurantRepositoryImpl(apiService)
+    fun provideRestaurantApiService(retrofit: Retrofit): RestaurantApiService {
+        return retrofit.create(RestaurantApiService::class.java)
     }
 }

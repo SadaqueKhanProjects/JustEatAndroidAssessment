@@ -1,43 +1,26 @@
 package com.sadaquekhan.justeatassessment.ui.screen.components
 
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.foundation.layout.*
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun SearchBar(
-    postcode: String,
-    onPostcodeChange: (String) -> Unit,
-    onSearch: () -> Unit,
-    showError: Boolean
+    value: String,
+    onValueChange: (String) -> Unit,
+    onSearch: () -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
-
-    OutlinedTextField(
-        value = postcode,
-        onValueChange = onPostcodeChange,
-        label = { Text("Enter UK postcode") },
-        isError = showError,
-        modifier = Modifier.fillMaxWidth(),
-        keyboardOptions = KeyboardOptions.Default.copy(
-            imeAction = ImeAction.Done,
-            keyboardType = KeyboardType.Text
-        ),
-        keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-                onSearch()
-            }
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            label = { Text("Enter UK postcode") },
+            modifier = Modifier.weight(1f)
         )
-    )
+        Button(onClick = onSearch) {
+            Text("Search")
+        }
+    }
 }
