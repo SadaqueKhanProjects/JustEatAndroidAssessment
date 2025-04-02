@@ -22,7 +22,9 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
 
     Log.d("RestaurantScreen", "Current UI state contains ${uiState.restaurants.size} restaurants")
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .padding(16.dp)) {
         SearchBar(
             value = postcode,
             onValueChange = {
@@ -51,12 +53,14 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
                     style = MaterialTheme.typography.bodySmall
                 )
             }
+
             postcode.isNotBlank() && uiState.restaurants.isEmpty() && !uiState.isLoading -> {
                 Text(
                     text = "No restaurants found.",
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+
             else -> {
                 LazyColumn {
                     items(uiState.restaurants.take(visibleCount)) { restaurant ->
