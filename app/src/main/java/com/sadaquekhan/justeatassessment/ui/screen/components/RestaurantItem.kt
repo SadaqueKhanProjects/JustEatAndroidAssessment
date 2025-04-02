@@ -1,25 +1,49 @@
 package com.sadaquekhan.justeatassessment.ui.screen.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
 @Composable
 fun RestaurantItem(restaurant: Restaurant) {
-    Card(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = restaurant.name, style = MaterialTheme.typography.titleMedium)
-            Text(text = "Rating: ${restaurant.rating}")
-            Text(text = "Cuisines: ${restaurant.cuisines.joinToString(", ")}")
-            Text(text = "Address: ${restaurant.addressLine}")
+        // Name
+        Text(
+            text = restaurant.name,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        // Rating
+        Text(
+            text = "Rating: ${restaurant.rating}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        // Cuisines
+        if (restaurant.cuisines.isNotEmpty()) {
+            Text(
+                text = "Cuisines: ${restaurant.cuisines.joinToString(separator = ", ")}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
+        // Address (now using pre-computed fullAddress)
+        if (restaurant.fullAddress.isNotBlank()) {
+            Text(
+                text = "Address: ${restaurant.fullAddress}",
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
     }
 }

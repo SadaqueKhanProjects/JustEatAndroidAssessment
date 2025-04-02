@@ -1,9 +1,9 @@
 package com.sadaquekhan.justeatassessment.data.repository
 
 import android.util.Log
-import com.sadaquekhan.justeatassessment.data.remote.dto.mapper.RestaurantMapper
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
+import com.sadaquekhan.justeatassessment.data.remote.dto.mapper.toDomain
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.URLEncoder
@@ -14,8 +14,7 @@ import javax.inject.Inject
  * Handles API communication and mapping to domain models.
  */
 class RestaurantRepositoryImpl @Inject constructor(
-    private val apiService: RestaurantApiService,
-    private val mapper: RestaurantMapper
+    private val apiService: RestaurantApiService
 ) : RestaurantRepository {
 
     override suspend fun getRestaurants(postcode: String): List<Restaurant> {
@@ -35,8 +34,8 @@ class RestaurantRepositoryImpl @Inject constructor(
                         "API success. Restaurants fetched: ${dtoList.size}"
                     )
 
-                    // Use mapper instance to map each item
-                    dtoList.map { mapper.toDomain(it) }
+                    // Use extension function to map each DTO to domain model
+                    dtoList.map { it.toDomain() }
                 } else {
                     Log.e(
                         "RestaurantRepository",
