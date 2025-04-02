@@ -16,6 +16,7 @@ This document outlines agile-style user stories that guided the development proc
 
 **Effort**: 5 points  
 **Tasks**:
+
 - Setup Retrofit base URL and endpoints
 - Parse JSON using Moshi
 - Return list of restaurant data
@@ -30,6 +31,7 @@ This document outlines agile-style user stories that guided the development proc
 
 **Effort**: 3 points  
 **Tasks**:
+
 - Build Compose LazyColumn UI
 - Display Restaurant Name, Cuisine, Rating, ETA
 - Handle empty/postcode-not-found states
@@ -44,6 +46,7 @@ This document outlines agile-style user stories that guided the development proc
 
 **Effort**: 2 points  
 **Tasks**:
+
 - Setup ViewModel + Repository
 - Organise folders by domain/presentation/data
 - Use StateFlow to drive UI state
@@ -58,6 +61,7 @@ This document outlines agile-style user stories that guided the development proc
 
 **Effort**: 2 points  
 **Tasks**:
+
 - Handle API failure (404, timeout)
 - Show snackbar or fallback message
 

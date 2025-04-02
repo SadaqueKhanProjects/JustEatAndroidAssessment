@@ -1,10 +1,23 @@
 package com.sadaquekhan.justeatassessment.network.api
 
-import com.sadaquekhan.justeatassessment.domain.model.RestaurantResponse
+import com.sadaquekhan.justeatassessment.data.remote.dto.RestaurantResponseDto
+import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Path
 
+/**
+ * Retrofit API interface to fetch restaurants by postcode
+ */
 interface RestaurantApiService {
-    @GET("restaurants")
-    suspend fun getRestaurants(@Query("postcode") postcode: String): RestaurantResponse
+
+    /**
+     * Fetches enriched restaurant data for a given UK postcode.
+     *
+     * @param postcode The UK postcode (must be URL-safe)
+     * @return Response containing a list of restaurants
+     */
+    @GET("discovery/uk/restaurants/enriched/bypostcode/{postcode}")
+    suspend fun getRestaurantsByPostcode(
+        @Path("postcode") postcode: String
+    ): Response<RestaurantResponseDto>
 }

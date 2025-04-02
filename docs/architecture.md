@@ -1,19 +1,26 @@
 # 🧱 Architecture Overview – Just Eat Android Assessment
 
-This app follows a clean **MVVM (Model–View–ViewModel)** architecture, ensuring separation of concerns, testability, and scalability — ideal for modern Android development.
+This app follows a clean **MVVM (Model–View–ViewModel)** architecture, ensuring separation of
+concerns, testability, and scalability — ideal for modern Android development.
 
 ---
 
 ## 🔄 Data Flow (Unidirectional)
 
-User Interaction ↓ Jetpack Compose View ↓ ViewModel (Handles logic & state) ↓ Repository (Handles data sources) ↓ Retrofit Service (API Layer) ↓ API Response (JSON → Model) ↓ ViewModel updates state ↓ Compose re-renders UI
+User Interaction ↓ Jetpack Compose View ↓ ViewModel (Handles logic & state) ↓ Repository (Handles
+data sources) ↓ Retrofit Service (API Layer) ↓ API Response (JSON → Model) ↓ ViewModel updates state
+↓ Compose re-renders UI
 
 
 ---
 
 ## 🗂 Planned Folder Structure
 
-app/ └── data/ └── model/ # Data classes for Restaurant, Cuisine, Address, etc. └── network/ # Retrofit interfaces and API config └── domain/ # Repository interface abstraction (optional) └── presentation/ └── ui/ # Jetpack Compose UI Screens └── viewmodel/ # State and logic └── components/ # Reusable UI components (e.g., Card, Loader) └── di/ # Hilt modules (if applied) └── utils/ # Constants, mappers, formatters
+app/ └── data/ └── model/ # Data classes for Restaurant, Cuisine, Address, etc. └── network/ #
+Retrofit interfaces and API config └── domain/ # Repository interface abstraction (optional) └──
+presentation/ └── ui/ # Jetpack Compose UI Screens └── viewmodel/ # State and logic └── components/
+# Reusable UI components (e.g., Card, Loader) └── di/ # Hilt modules (if applied) └── utils/ #
+Constants, mappers, formatters
 
 
 ---
