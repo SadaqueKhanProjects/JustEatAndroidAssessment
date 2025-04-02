@@ -19,14 +19,16 @@ class RestaurantViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RestaurantUiState())
     val uiState: StateFlow<RestaurantUiState> = _uiState
 
-    fun loadRestaurants(postcode: String) {
+    fun loadRestaurants(rawPostcode: String) {
+        // Sanitize the postcode: trim, remove spaces, uppercase
+        val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
+
+        Log.d("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
+
         viewModelScope.launch {
-            Log.d("RestaurantViewModel", "Loading restaurants for postcode: $postcode")
             _uiState.value = _uiState.value.copy(isLoading = true)
 
-            val restaurants: List<Restaurant> = repository.getRestaurants(postcode)
-
-            Log.d("RestaurantViewModel", "Fetched ${restaurants.size} restaurants from repository")
+            val restaurants: List<Restaurant> = repository.getRestaurants(sanitized)
 
             _uiState.value = _uiState.value.copy(
                 restaurants = restaurants,

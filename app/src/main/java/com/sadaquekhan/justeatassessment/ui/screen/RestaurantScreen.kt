@@ -33,11 +33,9 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
             },
             onSearch = {
                 if (postcode.trim().length >= 5) {
-                    Log.d("RestaurantScreen", "Triggering search for postcode: $postcode")
-                    viewModel.loadRestaurants(postcode.trim().uppercase())
+                    viewModel.loadRestaurants(postcode) // ViewModel handles sanitization
                     showError = false
                 } else {
-                    Log.d("RestaurantScreen", "Invalid postcode input: $postcode")
                     showError = true
                 }
             }
