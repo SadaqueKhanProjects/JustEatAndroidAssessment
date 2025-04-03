@@ -1,3 +1,4 @@
+// RestaurantViewModel.kt
 package com.sadaquekhan.justeatassessment.viewmodel
 
 import android.util.Log
@@ -27,10 +28,6 @@ class RestaurantViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RestaurantUiState())
     val uiState: StateFlow<RestaurantUiState> = _uiState
 
-    /**
-     * Loads restaurants for a given postcode.
-     * Sanitizes input and updates UI state based on outcome.
-     */
     fun loadRestaurants(rawPostcode: String) {
         val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
         Log.d("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
@@ -48,28 +45,29 @@ class RestaurantViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     restaurants = restaurants,
                     isLoading = false,
-                    isEmpty = restaurants.isEmpty()
-                )
-            } catch (e: IOException) {
-                Log.e("RestaurantViewModel", "IOException: ${e.localizedMessage}")
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    isEmpty = true,
-                    errorMessage = "No internet connection. Please check your network."
+                    isEmpty = restaurants.isEmpty(),
+                    errorMessage = null
                 )
             } catch (e: SocketTimeoutException) {
                 Log.e("RestaurantViewModel", "TimeoutException: ${e.localizedMessage}")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    isEmpty = true,
-                    errorMessage = "Server timeout. Please try again shortly."
+                    errorMessage = "Server timeout. Please try again shortly.",
+                    isEmpty = false
+                )
+            } catch (e: IOException) {
+                Log.e("RestaurantViewModel", "IOException: ${e.localizedMessage}")
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "No internet connection. Please check your network.",
+                    isEmpty = false
                 )
             } catch (e: Exception) {
                 Log.e("RestaurantViewModel", "Unhandled error: ${e.localizedMessage}")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    isEmpty = true,
-                    errorMessage = "Something went wrong. Please try again later."
+                    errorMessage = "Something went wrong. Please try again later.",
+                    isEmpty = false
                 )
             }
         }

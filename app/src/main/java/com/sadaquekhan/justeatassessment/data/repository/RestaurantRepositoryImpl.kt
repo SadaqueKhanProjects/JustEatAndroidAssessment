@@ -1,3 +1,4 @@
+// RestaurantRepositoryImpl.kt
 package com.sadaquekhan.justeatassessment.data.repository
 
 import android.util.Log
@@ -6,6 +7,8 @@ import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.SocketTimeoutException
 import java.net.URLEncoder
 import javax.inject.Inject
 
@@ -21,32 +24,28 @@ class RestaurantRepositoryImpl @Inject constructor(
     override suspend fun getRestaurants(postcode: String): List<Restaurant> {
         return withContext(Dispatchers.IO) {
             try {
-                // Encode postcode to make it URL-safe
                 val encodedPostcode = URLEncoder.encode(postcode.trim(), "UTF-8")
                 Log.d("RestaurantRepository", "API call started for postcode: $encodedPostcode")
 
-                // Make the API call
                 val response = apiService.getRestaurantsByPostcode(encodedPostcode)
 
                 if (response.isSuccessful) {
                     val dtoList = response.body()?.restaurants ?: emptyList()
-                    Log.d(
-                        "RestaurantRepository",
-                        "API success. Restaurants fetched: ${dtoList.size}"
-                    )
-
-                    // Use updated mapper function
+                    Log.d("RestaurantRepository", "API success. Restaurants fetched: ${dtoList.size}")
                     dtoList.map { mapper.mapToDomainModel(it) }
                 } else {
-                    Log.e(
-                        "RestaurantRepository",
-                        "API call failed. Code: ${response.code()} Message: ${response.message()}"
-                    )
-                    emptyList()
+                    Log.e("RestaurantRepository", "API error ${response.code()}: ${response.message()}")
+                    throw IOException("API error ${response.code()}: ${response.message()}")
                 }
+            } catch (e: SocketTimeoutException) {
+                Log.e("RestaurantRepository", "Timeout error: ${e.localizedMessage}")
+                throw SocketTimeoutException("Server timeout")
+            } catch (e: IOException) {
+                Log.e("RestaurantRepository", "Network error: ${e.localizedMessage}")
+                throw IOException("No internet connection")
             } catch (e: Exception) {
-                Log.e("RestaurantRepository", "Exception during API call: ${e.localizedMessage}")
-                emptyList()
+                Log.e("RestaurantRepository", "Unexpected error: ${e.localizedMessage}")
+                throw Exception("Something went wrong")
             }
         }
     }
