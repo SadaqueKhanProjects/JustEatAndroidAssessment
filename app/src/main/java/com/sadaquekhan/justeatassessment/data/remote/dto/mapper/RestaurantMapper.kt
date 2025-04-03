@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class RestaurantMapper @Inject constructor() {
 
-    // Whitelist of valid cuisine types
+    // Whitelist of valid cuisine types to display in the UI
     private val knownCuisines = setOf(
         "Indian", "Chinese", "Japanese", "Thai", "Pizza", "Burgers",
         "Italian", "Kebab", "Greek", "Turkish", "Halal", "Korean",
@@ -16,47 +16,69 @@ class RestaurantMapper @Inject constructor() {
         "Vegetarian", "French", "Seafood", "Sushi", "Sandwiches"
     )
 
-    fun toDomain(dto: RestaurantDto): Restaurant {
-        // Filter and sanitize cuisines
-        val filteredCuisines = dto.cuisines.map { it.name.trim() }.filter {
-            knownCuisines.contains(it)
-        }
-
-        val finalCuisines = if (filteredCuisines.isNotEmpty()) {
-            filteredCuisines
-        } else {
-            dto.cuisines.map { it.name.trim() }
-        }
-
-        // Sanitize address fields
-        val firstLineSanitized = capitalizeWords(dto.address.firstLine.trim())
-        val citySanitized = capitalizeWords(dto.address.city.trim())
-        val postalCodeSanitized = dto.address.postalCode.trim().uppercase()
-
-        // Remove repeated fields (e.g., "London, London")
-        val uniqueAddressParts = linkedSetOf(firstLineSanitized, citySanitized, postalCodeSanitized)
-            .filter { it.isNotBlank() }
+    /**
+     * Maps a RestaurantDto to a clean Restaurant domain model.
+     */
+    fun mapToDomainModel(dto: RestaurantDto): Restaurant {
+        val sanitizedAddress = sanitizeAndFormatAddress(dto)
 
         return Restaurant(
             id = dto.id,
-            name = dto.name,
-            cuisines = finalCuisines,
+            name = cleanRestaurantName(dto.name, sanitizedAddress),
+            cuisines = filterValidCuisines(dto),
             rating = dto.rating.starRating,
-            address = Address(
-                firstLine = firstLineSanitized,
-                city = citySanitized,
-                postalCode = postalCodeSanitized
-            )
+            address = sanitizedAddress
         )
     }
 
-    // Capitalizes the first letter of each word: "london road" -> "London Road"
-    private fun capitalizeWords(input: String): String {
-        return input.lowercase()
-            .split(" ")
+    /**
+     * Cleans restaurant name by:
+     * - Removing @handles, bracketed tags
+     * - Removing address fragments from name
+     */
+    private fun cleanRestaurantName(originalName: String, address: Address): String {
+        var name = originalName
+            .replace(Regex("@\\S+"), "")           // Remove handles like "@BensCafe"
+            .replace(Regex("\\(.*?\\)"), "")       // Remove anything in brackets
+            .trim()
+
+        // Tokenize address to filter from name
+        val addressTokens = listOf(
+            address.firstLine,
+            address.city,
+            address.postalCode
+        ).flatMap { it.split(" ", ",") }
+            .map { it.lowercase().trim() }
             .filter { it.isNotBlank() }
-            .joinToString(" ") { word ->
-                word.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
-            }
+
+        // Remove address-like fragments from restaurant name
+        name = name.split(" ")
+            .filterNot { it.lowercase() in addressTokens }
+            .joinToString(" ")
+
+        return name.trim()
+    }
+
+    /**
+     * Filters and returns only known cuisine types.
+     * Returns empty list if none match the whitelist.
+     */
+    private fun filterValidCuisines(dto: RestaurantDto): List<String> {
+        return dto.cuisines
+            .map { it.name.trim() }
+            .filter { it in knownCuisines }
+    }
+
+    /**
+     * Sanitizes the address fields:
+     * - Capitalizes first letter of line and city
+     * - Converts postal code to uppercase
+     */
+    private fun sanitizeAndFormatAddress(dto: RestaurantDto): Address {
+        return Address(
+            firstLine = dto.address.firstLine.trim().replaceFirstChar { it.uppercaseChar() },
+            city = dto.address.city.trim().replaceFirstChar { it.uppercaseChar() },
+            postalCode = dto.address.postalCode.trim().uppercase()
+        )
     }
 }
