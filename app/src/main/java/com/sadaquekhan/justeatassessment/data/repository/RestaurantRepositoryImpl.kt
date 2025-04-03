@@ -35,8 +35,8 @@ class RestaurantRepositoryImpl @Inject constructor(
                         "API success. Restaurants fetched: ${dtoList.size}"
                     )
 
-                    // Use mapper instance to map each item
-                    dtoList.map { mapper.toDomain(it) }
+                    // Use updated mapper function
+                    dtoList.map { mapper.mapToDomainModel(it) }
                 } else {
                     Log.e(
                         "RestaurantRepository",
