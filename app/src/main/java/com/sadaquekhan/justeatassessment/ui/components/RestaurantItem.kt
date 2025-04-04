@@ -9,6 +9,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
+/**
+ * A composable that displays individual restaurant information in a structured layout.
+ *
+ * Shows name, rating, cuisine list, and full address using the domain model.
+ *
+ * @param restaurant A [Restaurant] object to be rendered.
+ */
 @Composable
 fun RestaurantItem(restaurant: Restaurant) {
     Column(
@@ -16,7 +23,6 @@ fun RestaurantItem(restaurant: Restaurant) {
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
-        // Name
         Text(
             text = restaurant.name,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
@@ -24,21 +30,18 @@ fun RestaurantItem(restaurant: Restaurant) {
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Rating
         Text(
             text = "Rating: ${restaurant.rating}",
             style = MaterialTheme.typography.bodyMedium
         )
 
-        // Cuisines
         if (restaurant.cuisines.isNotEmpty()) {
             Text(
-                text = "Cuisines: ${restaurant.cuisines.joinToString(separator = ", ")}",
+                text = "Cuisines: ${restaurant.cuisines.joinToString(", ")}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }
 
-        // Address (now using pre-computed fullAddress)
         if (restaurant.fullAddress.isNotBlank()) {
             Text(
                 text = "Address: ${restaurant.fullAddress}",

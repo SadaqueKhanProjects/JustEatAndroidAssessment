@@ -12,6 +12,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
+/**
+ * Provides dependency injection bindings for repository interfaces.
+ *
+ * Uses Hilt's `@Binds` to map the implementation to the interface.
+ * Keeps architecture loosely coupled and testable.
+ *
+ * @see NetworkModule for Retrofit and API service providers.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
@@ -22,6 +30,12 @@ abstract class AppModule {
     ): RestaurantRepository
 }
 
+/**
+ * Provides network-level dependencies using Hilt.
+ *
+ * Includes Retrofit setup with Moshi for JSON parsing,
+ * and initializes the RestaurantApiService for API calls.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -30,7 +44,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://uk.api.just-eat.io/") // ✅ Correct base URL
+            .baseUrl("https://uk.api.just-eat.io/")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }

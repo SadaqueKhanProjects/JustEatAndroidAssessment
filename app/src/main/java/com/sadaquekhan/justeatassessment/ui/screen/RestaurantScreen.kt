@@ -13,6 +13,15 @@ import com.sadaquekhan.justeatassessment.ui.components.SearchBar
 import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
+/**
+ * Main screen for displaying a list of restaurants based on user input.
+ *
+ * - Integrates `RestaurantViewModel` to fetch and observe UI state.
+ * - Validates user postcode input before triggering a search.
+ * - Displays search results using a scrollable list of `RestaurantItem`s.
+ *
+ * @param viewModel Injected ViewModel managing restaurant search and UI state.
+ */
 @Composable
 fun RestaurantScreen(viewModel: RestaurantViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -25,6 +34,8 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(16.dp)) {
+
+        // Top search bar
         SearchBar(
             value = postcode,
             onValueChange = {
@@ -33,7 +44,7 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
             },
             onSearch = {
                 if (postcode.trim().length >= 5) {
-                    viewModel.loadRestaurants(postcode) // ViewModel handles sanitization
+                    viewModel.loadRestaurants(postcode)
                     showError = false
                 } else {
                     showError = true
@@ -43,6 +54,7 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Dynamic UI rendering based on search state
         when {
             showError -> {
                 Text(

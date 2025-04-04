@@ -5,9 +5,18 @@ import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import javax.inject.Inject
 
+/**
+ * Responsible for mapping `RestaurantDto` into domain-level `Restaurant` models.
+ * Ensures the app uses clean, sanitized, user-friendly data structures.
+ *
+ * Includes:
+ * - Name cleanup
+ * - Cuisine filtering
+ * - UK address normalization
+ */
 class RestaurantMapper @Inject constructor() {
 
-    // ✅ Whitelist of valid cuisine types allowed to display in the UI
+    // Whitelist of supported cuisines shown in the UI
     private val knownCuisines = setOf(
         "Indian", "Chinese", "Japanese", "Thai", "Pizza", "Burgers",
         "Italian", "Kebab", "Greek", "Turkish", "Halal", "Korean",
@@ -17,8 +26,10 @@ class RestaurantMapper @Inject constructor() {
     )
 
     /**
-     * Converts a RestaurantDto into a sanitized domain Restaurant model.
-     * This ensures UI content is clean, user-friendly, and consistent.
+     * Maps a raw RestaurantDto to a clean Restaurant domain model.
+     *
+     * @param dto API-level restaurant data
+     * @return Domain-level Restaurant model
      */
     fun mapToDomainModel(dto: RestaurantDto): Restaurant {
         val sanitizedAddress = sanitizeAndFormatAddress(dto)
@@ -33,44 +44,35 @@ class RestaurantMapper @Inject constructor() {
     }
 
     /**
-     * Cleans the restaurant name for clean display:
-     * - Removes handles (@PizzaPlace), bracketed tags (e.g., (Halal))
-     * - Removes address fragments (e.g., city/postcode) found in name
-     * - Removes leftover punctuation and dash artifacts after filtering
+     * Removes social handles, address fragments, and bracket tags from restaurant names.
+     * @param originalName The raw name from the API
+     * @param address The already cleaned address for reference
      */
     private fun cleanRestaurantName(originalName: String, address: Address): String {
         var name = originalName
             .replace(Regex("@\\S+"), "")             // Remove social handles
-            .replace(Regex("\\(.*?\\)"), "")         // Remove anything in brackets
+            .replace(Regex("\\(.*?\\)"), "")         // Remove tags in brackets
             .trim()
 
-        // Tokenize and clean address components
-        val addressTokens = listOf(
-            address.firstLine,
-            address.city,
-            address.postalCode
-        ).flatMap { it.split(" ", ",", "-", "–") } // Also split on hyphens
+        val addressTokens = listOf(address.firstLine, address.city, address.postalCode)
+            .flatMap { it.split(" ", ",", "-", "–") }
             .map { it.lowercase().trim() }
             .filter { it.isNotBlank() }
 
-        // Remove tokens from name that are part of the address
-        name = name.split(" ", "-", "–", ",") // Split on typical separators
+        name = name.split(" ", "-", "–", ",")
             .filterNot { it.lowercase() in addressTokens }
             .joinToString(" ")
 
-        // Remove dangling punctuation like trailing hyphens or commas
-        name = name
-            .replace(Regex("[-–,]+\\s*$"), "")    // Trailing punctuation
-            .replace(Regex("^\\s*[-–,]+"), "")    // Leading punctuation
-            .replace(Regex("\\s{2,}"), " ")       // Extra spaces
-            .trim()
-
         return name
+            .replace(Regex("[-–,]+\\s*$"), "")
+            .replace(Regex("^\\s*[-–,]+"), "")
+            .replace(Regex("\\s{2,}"), " ")
+            .trim()
     }
 
     /**
-     * Filters only known/valid cuisine types from the API response.
-     * Returns an empty list if none are valid.
+     * Filters only valid cuisine names based on a known whitelist.
+     * @param dto RestaurantDto containing raw cuisine names
      */
     private fun filterValidCuisines(dto: RestaurantDto): List<String> {
         return dto.cuisines
@@ -79,10 +81,8 @@ class RestaurantMapper @Inject constructor() {
     }
 
     /**
-     * Sanitizes address fields according to UK standards:
-     * - Proper casing (e.g., Kilburn High Road)
-     * - Normalized whitespace and punctuation
-     * - Proper postcode format (e.g., SW1A 1AA)
+     * Sanitizes address fields according to UK formatting conventions.
+     * Ensures sentence casing, trimmed spacing, and formatted postcode.
      */
     private fun sanitizeAndFormatAddress(dto: RestaurantDto): Address {
         val rawFirstLine = dto.address.firstLine.trim()
@@ -111,16 +111,16 @@ class RestaurantMapper @Inject constructor() {
     }
 
     /**
-     * Normalizes casing, whitespace, and symbols within a given address string.
-     * Ensures proper sentence-style formatting for both city and firstLine.
+     * Normalizes casing, whitespace, and symbols for address components.
+     * @param raw Raw component (firstLine or city)
      */
     private fun normalizeAddressComponent(raw: String): String {
         return raw
-            .replace(Regex("[,\\-–]{2,}"), ",")       // Normalize repeated commas/dashes
-            .replace(Regex("\\s{2,}"), " ")           // Collapse multiple spaces
-            .replace(Regex(",\\s*,"), ",")            // Fix duplicate commas
-            .replace(Regex("[\\s,]+\$"), "")          // Remove trailing comma/space
-            .replace(Regex("^\\s*,*"), "")            // Remove leading comma/space
+            .replace(Regex("[,\\-–]{2,}"), ",")
+            .replace(Regex("\\s{2,}"), " ")
+            .replace(Regex(",\\s*,"), ",")
+            .replace(Regex("[\\s,]+\$"), "")
+            .replace(Regex("^\\s*,*"), "")
             .split(" ")
             .joinToString(" ") { it.lowercase().replaceFirstChar { c -> c.uppercaseChar() } }
             .trim()

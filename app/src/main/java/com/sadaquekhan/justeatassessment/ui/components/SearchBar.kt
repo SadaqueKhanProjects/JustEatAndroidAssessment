@@ -13,6 +13,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
 
+/**
+ * Reusable composable for capturing user input via a text field and search button.
+ *
+ * Accepts value bindings and search callback for tight integration with ViewModel state.
+ *
+ * @param value The current text entered by the user.
+ * @param onValueChange Callback triggered when the input text changes.
+ * @param onSearch Callback triggered when the user taps the search button.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
@@ -33,12 +42,10 @@ fun SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .border(2.dp, Color.Black, shape = RoundedCornerShape(14.dp)), // Bold black border
-            shape = RoundedCornerShape(14.dp), // Slightly more prominent corners
+                .border(2.dp, Color.Black, shape = RoundedCornerShape(14.dp)),
+            shape = RoundedCornerShape(14.dp),
             singleLine = true,
-            textStyle = LocalTextStyle.current.copy(
-                color = Color.Black
-            ),
+            textStyle = LocalTextStyle.current.copy(color = Color.Black),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search,
                 keyboardType = KeyboardType.Text

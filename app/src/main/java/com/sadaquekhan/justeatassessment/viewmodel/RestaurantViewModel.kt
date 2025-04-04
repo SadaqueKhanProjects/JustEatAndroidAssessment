@@ -11,6 +11,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+/**
+ * ViewModel responsible for managing the restaurant search state.
+ *
+ * Uses Hilt for injecting the repository dependency.
+ * Maintains a reactive UI state via Kotlin StateFlow.
+ *
+ * @property repository Repository that fetches and maps restaurant data
+ * @property uiState Exposes loading + restaurant list state to the UI
+ */
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
     private val repository: RestaurantRepository
@@ -19,10 +28,16 @@ class RestaurantViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RestaurantUiState())
     val uiState: StateFlow<RestaurantUiState> = _uiState
 
+    /**
+     * Loads restaurants using a user-provided postcode.
+     *
+     * Sanitizes the input and calls the repository. Automatically
+     * updates loading state and fetched data in the UI state flow.
+     *
+     * @param rawPostcode Input from the user (can include spaces or lowercase)
+     */
     fun loadRestaurants(rawPostcode: String) {
-        // Sanitize the postcode: trim, remove spaces, uppercase
         val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
-
         Log.d("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
 
         viewModelScope.launch {
