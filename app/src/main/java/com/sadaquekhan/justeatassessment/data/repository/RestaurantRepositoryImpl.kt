@@ -1,7 +1,7 @@
 package com.sadaquekhan.justeatassessment.data.repository
 
 import android.util.Log
-import com.sadaquekhan.justeatassessment.data.remote.dto.mapper.RestaurantMapper
+import com.sadaquekhan.justeatassessment.data.mapper.RestaurantMapper
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
 import kotlinx.coroutines.Dispatchers

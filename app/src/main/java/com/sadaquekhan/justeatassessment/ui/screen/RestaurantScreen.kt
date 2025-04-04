@@ -8,8 +8,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.sadaquekhan.justeatassessment.ui.screen.components.RestaurantItem
-import com.sadaquekhan.justeatassessment.ui.screen.components.SearchBar
+import com.sadaquekhan.justeatassessment.ui.components.RestaurantItem
+import com.sadaquekhan.justeatassessment.ui.components.SearchBar
 import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 

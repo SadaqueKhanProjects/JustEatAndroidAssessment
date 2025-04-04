@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.data.remote.dto
+package com.sadaquekhan.justeatassessment.data.dto
 
 import com.squareup.moshi.JsonClass
 

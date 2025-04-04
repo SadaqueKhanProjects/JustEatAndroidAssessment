@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.ui.screen.components
+package com.sadaquekhan.justeatassessment.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme

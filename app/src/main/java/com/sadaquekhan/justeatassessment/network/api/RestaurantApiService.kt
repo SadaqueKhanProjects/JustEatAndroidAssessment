@@ -1,6 +1,6 @@
 package com.sadaquekhan.justeatassessment.network.api
 
-import com.sadaquekhan.justeatassessment.data.remote.dto.RestaurantResponseDto
+import com.sadaquekhan.justeatassessment.data.dto.RestaurantResponseDto
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

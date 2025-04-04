@@ -1,6 +1,6 @@
-package com.sadaquekhan.justeatassessment.data.remote.dto.mapper
+package com.sadaquekhan.justeatassessment.data.mapper
 
-import com.sadaquekhan.justeatassessment.data.remote.dto.RestaurantDto
+import com.sadaquekhan.justeatassessment.data.dto.RestaurantDto
 import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import javax.inject.Inject
