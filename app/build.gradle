@@ -1,97 +1,108 @@
-// Apply core plugins for Android + Kotlin + Hilt + KAPT (annotation processing)
+// ------------------------------
+// Plugin Configuration
+// ------------------------------
 plugins {
-    id 'com.android.application'
-    id 'org.jetbrains.kotlin.android'
-    id 'com.google.dagger.hilt.android'
-    id 'kotlin-kapt'
+    id 'com.android.application'          // Required for building an Android application
+    id 'org.jetbrains.kotlin.android'     // Enables Kotlin support in Android
+    id 'com.google.dagger.hilt.android'   // Enables Hilt for Dependency Injection
+    id 'kotlin-kapt'                      // Enables Kotlin annotation processing (used by Hilt & Moshi)
 }
 
+// ------------------------------
+// Android Module Configuration
+// ------------------------------
 android {
-    namespace 'com.sadaquekhan.justeatassessment'
-    compileSdk 34
+    namespace 'com.sadaquekhan.justeatassessment' // Application's package namespace
+    compileSdk 34                                 // SDK version used to compile the app
 
     defaultConfig {
-        applicationId "com.sadaquekhan.justeatassessment"
-        minSdk 24                          // Supports Android 7.0 and up
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        applicationId "com.sadaquekhan.justeatassessment" // Unique application ID
+        minSdk 24                                          // Minimum Android version supported
+        targetSdk 34                                       // Target Android version for runtime behavior
+        versionCode 1                                      // Internal version for updates
+        versionName "1.0"                                  // User-facing version string
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner" // Used for instrumentation testing
 
         vectorDrawables {
-            useSupportLibrary true         // Enables vector drawable support on older devices
+            useSupportLibrary true  // Ensures vector compatibility on older devices
         }
     }
 
     buildTypes {
         release {
-            minifyEnabled false            // No code shrinking for release builds (can be enabled later)
+            minifyEnabled false     // Disables code shrinking and obfuscation
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
     buildFeatures {
-        compose true                      // Enables Jetpack Compose support
+        compose true               // Enables Jetpack Compose UI support
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.5.10' // Must match Compose library version
+        kotlinCompilerExtensionVersion '1.5.10' // Required Compose compiler version
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_17  // Use Java 17 for source compatibility
+        targetCompatibility JavaVersion.VERSION_17  // Output Java 17 bytecode
     }
 
     kotlinOptions {
-        jvmTarget = '17'                 // Required for language features and compatibility
+        jvmTarget = '17'             // Target JVM bytecode version
     }
 
     packagingOptions {
         resources {
-            excludes += '/META-INF/{AL2.0,LGPL2.1}' // Removes duplicate license metadata
+            excludes += '/META-INF/{AL2.0,LGPL2.1}' // Avoids duplicate license resource conflicts
         }
     }
 }
 
+// ------------------------------
+// Dependencies Section
+// ------------------------------
 dependencies {
-    // Lifecycle (Compose + ViewModel support)
+    // Jetpack Lifecycle (Compose)
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.1"
+
+    // Lifecycle & ViewModel (non-Compose)
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
 
-    // Kotlin Coroutines for async operations
+    // Kotlin Coroutines (for asynchronous operations)
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 
-    // Retrofit and Moshi for networking and JSON parsing
+    // Networking: Retrofit + Moshi (for API calls and JSON parsing)
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
 
-    // OkHttp for HTTP client and logging
+    // Networking: OkHttp (HTTP client and logging)
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
 
-    // Dependency Injection with Hilt
+    // Hilt for Dependency Injection
     implementation "com.google.dagger:hilt-android:2.48"
     kapt "com.google.dagger:hilt-compiler:2.48"
+
+    // Hilt + Jetpack Compose integration
     implementation "androidx.hilt:hilt-navigation-compose:1.1.0"
 
-    // Jetpack Compose UI components
+    // Jetpack Compose Core Libraries
     implementation 'androidx.activity:activity-compose:1.7.2'
     implementation 'androidx.compose.ui:ui:1.5.0'
     implementation 'androidx.compose.material3:material3:1.1.0'
     implementation 'androidx.compose.ui:ui-tooling-preview:1.5.0'
     debugImplementation 'androidx.compose.ui:ui-tooling:1.5.0'
 
-    // Testing dependencies
+    // Testing (unit + instrumentation)
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.5.0'
 
-    // Moshi for JSON serialization/deserialization
+    // Moshi JSON Library (Kotlin support)
     implementation "com.squareup.moshi:moshi:1.15.0"
     implementation "com.squareup.moshi:moshi-kotlin:1.15.0"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:1.15.0"

@@ -3,18 +3,15 @@ package com.sadaquekhan.justeatassessment.data.repository
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
 /**
- * Repository interface defining how restaurant data is fetched.
- *
- * Abstracts away API details from domain/business logic.
- * Used to allow easy mocking and testing.
+ * Interface for fetching restaurants from a data source (e.g., remote API).
+ * Used to decouple business logic from networking implementation.
  */
 interface RestaurantRepository {
-
     /**
-     * Retrieves a list of restaurants by UK postcode.
+     * Returns a list of restaurants for a given UK postcode.
      *
-     * @param postcode Postcode string input by the user
-     * @return List of domain-level `Restaurant` objects
+     * @param postcode The postcode used for the restaurant search
+     * @return List of domain Restaurant models
      */
     suspend fun getRestaurants(postcode: String): List<Restaurant>
 }

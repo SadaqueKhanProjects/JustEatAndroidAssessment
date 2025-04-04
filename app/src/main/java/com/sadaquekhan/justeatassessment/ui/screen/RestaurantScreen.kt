@@ -7,64 +7,60 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sadaquekhan.justeatassessment.ui.components.RestaurantItem
 import com.sadaquekhan.justeatassessment.ui.components.SearchBar
 import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
- * Main screen for displaying a list of restaurants based on user input.
+ * Main screen composable that renders the search bar, error states,
+ * loading indicator, and a scrollable list of restaurants.
  *
- * - Integrates `RestaurantViewModel` to fetch and observe UI state.
- * - Validates user postcode input before triggering a search.
- * - Displays search results using a scrollable list of `RestaurantItem`s.
- *
- * @param viewModel Injected ViewModel managing restaurant search and UI state.
+ * ViewModel is injected via Hilt. UI state is observed via StateFlow.
  */
 @Composable
-fun RestaurantScreen(viewModel: RestaurantViewModel) {
+fun RestaurantScreen() {
+    val viewModel: RestaurantViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var postcode by remember { mutableStateOf("") }
-    var showError by remember { mutableStateOf(false) }
     val visibleCount = 10
 
-    Log.d("RestaurantScreen", "Current UI state contains ${uiState.restaurants.size} restaurants")
+    Log.d("RestaurantScreen", "UI contains ${uiState.restaurants.size} restaurants")
 
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)) {
-
-        // Top search bar
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         SearchBar(
             value = postcode,
             onValueChange = {
                 postcode = it
-                showError = false
             },
             onSearch = {
-                if (postcode.trim().length >= 5) {
-                    viewModel.loadRestaurants(postcode)
-                    showError = false
-                } else {
-                    showError = true
-                }
+                viewModel.loadRestaurants(postcode)
             }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Dynamic UI rendering based on search state
         when {
-            showError -> {
+            !uiState.errorMessage.isNullOrBlank() -> {
                 Text(
-                    text = "Please enter a valid UK postcode.",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
+                    text = uiState.errorMessage ?: "Something went wrong.",
+                    color = Color(0xFFB00020),
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
 
-            postcode.isNotBlank() && uiState.restaurants.isEmpty() && !uiState.isLoading -> {
+            uiState.isLoading -> {
+                CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
+            }
+
+            uiState.hasSearched && uiState.restaurants.isEmpty() -> {
                 Text(
                     text = "No restaurants found.",
                     style = MaterialTheme.typography.bodyMedium
@@ -74,7 +70,7 @@ fun RestaurantScreen(viewModel: RestaurantViewModel) {
             else -> {
                 LazyColumn {
                     items(uiState.restaurants.take(visibleCount)) { restaurant ->
-                        Log.d("RestaurantScreen", "Displaying restaurant: ${restaurant.name}")
+                        Log.d("RestaurantScreen", "Rendering: ${restaurant.name}")
                         RestaurantItem(restaurant = restaurant)
                     }
                 }

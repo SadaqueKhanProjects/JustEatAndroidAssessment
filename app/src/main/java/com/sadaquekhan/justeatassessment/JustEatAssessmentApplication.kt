@@ -4,10 +4,9 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 /**
- * Application class for Just Eat Assessment.
- *
- * Annotated with `@HiltAndroidApp` to initialize Hilt's dependency graph
- * and enable field injection across the entire app.
+ * Base application class for the Just Eat Android Assessment.
+ * Annotated with @HiltAndroidApp to enable Hilt's dependency injection.
+ * Initializes the dependency graph automatically at app startup.
  */
 @HiltAndroidApp
 class JustEatAssessmentApplication : Application()

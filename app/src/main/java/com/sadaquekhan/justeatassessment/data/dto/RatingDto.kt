@@ -3,14 +3,13 @@ package com.sadaquekhan.justeatassessment.data.dto
 import com.squareup.moshi.JsonClass
 
 /**
- * DTO for the 'rating' block in Just Eat's UK API response.
+ * DTO representing the rating details of a restaurant.
  *
- * Used strictly for network parsing and mapped to a domain model before business/UI use.
- * Moshi's `@JsonClass` enables efficient, safe deserialization.
+ * Parsed from the API and passed into domain models/UI for displaying customer satisfaction.
  *
- * @property starRating Numeric star rating of the restaurant (e.g., 4.5)
+ * @property starRating Average customer star rating (e.g., 4.5)
  *
- * @see RestaurantDto – contains this as a nested object.
+ * @see RestaurantDto – uses this DTO to show restaurant ratings.
  */
 @JsonClass(generateAdapter = true)
 data class RatingDto(

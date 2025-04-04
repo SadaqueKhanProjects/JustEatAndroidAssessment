@@ -13,17 +13,17 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 /**
- * Provides dependency injection bindings for repository interfaces.
- *
- * Uses Hilt's `@Binds` to map the implementation to the interface.
- * Keeps architecture loosely coupled and testable.
- *
- * @see NetworkModule for Retrofit and API service providers.
+ * Hilt module responsible for binding interfaces to implementations
+ * and providing singleton instances of network services.
  */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
 
+    /**
+     * Binds RestaurantRepositoryImpl to RestaurantRepository interface.
+     * Enables constructor injection across the app.
+     */
     @Binds
     abstract fun bindRestaurantRepository(
         impl: RestaurantRepositoryImpl
@@ -31,10 +31,7 @@ abstract class AppModule {
 }
 
 /**
- * Provides network-level dependencies using Hilt.
- *
- * Includes Retrofit setup with Moshi for JSON parsing,
- * and initializes the RestaurantApiService for API calls.
+ * Provides Retrofit and API service instances using Hilt.
  */
 @Module
 @InstallIn(SingletonComponent::class)

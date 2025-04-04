@@ -3,14 +3,13 @@ package com.sadaquekhan.justeatassessment.data.dto
 import com.squareup.moshi.JsonClass
 
 /**
- * DTO for a single cuisine type in Just Eat's UK API response.
+ * DTO representing a single cuisine type offered by a restaurant.
  *
- * Used strictly for network parsing and mapped to a domain model before business/UI use.
- * Moshi's `@JsonClass` enables efficient, safe deserialization.
+ * Often returned as part of a list of cuisines in the RestaurantDto.
  *
- * @property name Name of the cuisine (e.g., "Italian", "Chinese", "Indian")
+ * @property name The name of the cuisine (e.g., "Indian", "Italian", "Sushi")
  *
- * @see RestaurantDto – contains a list of this DTO as part of its structure.
+ * @see RestaurantDto – contains a list of this DTO.
  */
 @JsonClass(generateAdapter = true)
 data class CuisineDto(

@@ -1,15 +1,14 @@
 package com.sadaquekhan.justeatassessment.domain.model
 
 /**
- * Domain model representing a restaurant, used by the business and UI layers.
+ * Domain model representing a restaurant after mapping and sanitization.
+ * This model is safe for use in the UI layer.
  *
- * This is mapped from RestaurantDto and sanitized before reaching the UI.
- *
- * @property id Unique identifier of the restaurant
- * @property name Cleaned name used for display
- * @property cuisines Filtered list of valid cuisine types
- * @property rating Numeric rating score (e.g., 4.2)
- * @property address Full address (first line, city, postcode)
+ * @property id Unique restaurant identifier
+ * @property name Cleaned restaurant name
+ * @property cuisines List of validated cuisine types
+ * @property rating Star rating from customer reviews
+ * @property address Formatted Address model
  */
 data class Restaurant(
     val id: String,
@@ -19,8 +18,7 @@ data class Restaurant(
     val address: Address
 ) {
     /**
-     * Combines address fields into a single displayable string.
-     * Used directly in the UI for presenting restaurant location.
+     * Combines address fields into a readable single-line address string.
      */
     val fullAddress: String
         get() = listOfNotNull(
@@ -31,13 +29,7 @@ data class Restaurant(
 }
 
 /**
- * Domain model for representing a physical address.
- *
- * Used inside the Restaurant model.
- *
- * @property firstLine Street or building name
- * @property city City portion of the address
- * @property postalCode Standard UK postcode
+ * Domain-level representation of a UK address.
  */
 data class Address(
     val firstLine: String,
