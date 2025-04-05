@@ -6,7 +6,7 @@ import com.sadaquekhan.justeatassessment.domain.model.Restaurant
  * Interface for fetching restaurants from a data source (e.g., remote API).
  * Used to decouple business logic from networking implementation.
  */
-interface RestaurantRepository {
+interface IRestaurantRepository {
     /**
      * Returns a list of restaurants for a given UK postcode.
      *

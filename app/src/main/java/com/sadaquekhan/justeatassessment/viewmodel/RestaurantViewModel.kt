@@ -2,7 +2,7 @@ package com.sadaquekhan.justeatassessment.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepository
+import com.sadaquekhan.justeatassessment.data.repository.IRestaurantRepository
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +22,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
-    private val repository: RestaurantRepository,
+    private val repository: IRestaurantRepository,
     private val logger: Logger // Inject logger for platform-agnostic logging
 ) : ViewModel() {
 
