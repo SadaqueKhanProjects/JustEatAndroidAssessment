@@ -27,39 +27,46 @@ This document serves as a development log and architectural trace for the Just E
 
 ## 📌 Current Focus
 
-Actively working under `feature/05-final-submission-polish`.  
-Architecture is stable; final polish includes:  
-– Postcode validation  
-– UI consistency checks  
-– README and documentation refinement
+- Actively working under the branch: `feature/05-final-submission-polish`
+- Architecture is stable; current efforts are focused on final polish:
+  - Postcode validation improvements
+  - UI consistency checks across devices and themes
+  - README and documentation refinement
 
 ---
 
 ## 🧠 Core Design Decisions
 
-### — Name
+### — 🧼 Name
 
-Sanitization applied to strip trailing characters (e.g., hyphens, brackets).  
-Removed non-restaurant content like embedded addresses or social handles.  
-Avoided a complex blacklist engine due to absence of full dataset.
+- Sanitization applied to strip trailing characters (e.g., hyphens, brackets).  
+- Removed non-restaurant content like embedded addresses or social handles.  
+- Avoided implementing a complex blacklist engine due to the absence of a full dataset.
 
-### — Cuisines
+---
 
-Used a **whitelist-based filtering** for logical cuisine terms (e.g., "Pizza", "Mexican", "Halal").  
-Excluded unknown or ambiguous cuisine labels to prevent UI clutter.  
-Attempted broader endpoint queries for cuisine metadata, which returned `403 Forbidden` — likely due to Just Eat API access restrictions.
+### — 🍽️ Cuisines
 
-### — Rating (as a Number)
+- Applied **whitelist-based filtering** for logical cuisine terms (e.g., "Pizza", "Mexican", "Halal").  
+- Excluded unknown or ambiguous cuisine labels to reduce UI clutter.  
+- Attempted broader endpoint queries for cuisine metadata — returned `403 Forbidden` (likely due to API access restrictions).
 
-Ratings only shown when `starRating` is present.  
-Omitted cuisine sections when rating was null to avoid suggesting 0 stars.  
-Avoided placeholder/default values to prevent misleading the user.
+---
 
-### — Address
+### — ⭐ Rating (as a Number)
 
-Cleaned and normalized using domain-specific formatting logic.  
-No faulty addresses found; response fields were consistent (`firstLine`, `city`, `postalCode`).  
-Handled duplicate commas and improper casing where necessary.
+- Displayed ratings **only** when `starRating` is present.  
+- Omitted cuisine sections when rating was null to avoid suggesting 0 stars.  
+- Avoided placeholder or default values to prevent misleading the user.
+
+---
+
+### — 🏡 Address
+
+- Cleaned and normalized using domain-specific formatting logic.  
+- No faulty addresses found — fields like `firstLine`, `city`, and `postalCode` were consistent.  
+- Handled duplicate commas and improper casing where necessary.
+
 
 ---
 
@@ -77,27 +84,28 @@ Pattern: Only alphanumeric, uppercase characters
 
 ## ⚠️ Challenges & Constraints
 
-Full API schema was unavailable. Attempts to fetch metadata from undocumented endpoints failed due to 403 errors.  
-Without exhaustive datasets, pattern-based blacklist logic for names/cuisines was deprioritized in favor of known-good data (whitelisting).  
-UI inconsistencies across devices were observed — partially mitigated via spacing tokens and `MaterialTheme`.
+- Full API schema was unavailable — attempts to fetch metadata from undocumented endpoints resulted in `403 Forbidden` errors.
+- Without exhaustive datasets, complex blacklist logic for names/cuisines was deprioritized in favor of **whitelisting** known-good values.
+- UI inconsistencies across devices were observed — partially mitigated using spacing tokens and `MaterialTheme`.
 
 ---
 
 ## 💡 Future Improvements
 
-Implement dynamic preview annotations (`@Preview`) for layout QA.  
-Add `.github/ISSUE_TEMPLATE` for easier backlog curation.  
-Introduce `Result<T>` or sealed class wrappers for unified error handling.  
-Expand DI graph to support testable interfaces and mockable service layers.  
-Modularize networking and domain logic further for reuse.
+- Implement dynamic layout previews using `@Preview` annotations for visual QA.
+- Add a `.github/ISSUE_TEMPLATE` to streamline issue reporting and backlog curation.
+- Introduce a `Result<T>` wrapper or sealed classes for more robust, unified error handling.
+- Expand the **DI graph** to support testable interfaces and mockable service layers.
+- Further modularize **networking** and **domain** logic for better reuse and scalability.
 
 ---
 
 ## 🗂 Documentation References
 
-[Architecture Overview](architecture.md)  
-[User Stories](user_stories.md)  
-[README](../README.md)  
-[Kanban Task Board](https://github.com/users/SadaqueKhanProjects/projects/1/views/1)
+- [Architecture Overview](architecture.md)  
+- [User Stories](user_stories.md)  
+- [README](../README.md)  
+- [Kanban Task Board](https://github.com/users/SadaqueKhanProjects/projects/1/views/1)
 
 ---
+
