@@ -50,8 +50,10 @@ fun RestaurantScreen() {
         when {
             !uiState.errorMessage.isNullOrBlank() -> {
                 Text(
+
                     text = uiState.errorMessage ?: "Something went wrong.",
                     color = Color(0xFFB00020),
+
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -59,8 +61,8 @@ fun RestaurantScreen() {
             uiState.isLoading -> {
                 CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
             }
-
             uiState.hasSearched && uiState.restaurants.isEmpty() -> {
+
                 Text(
                     text = "No restaurants found.",
                     style = MaterialTheme.typography.bodyMedium

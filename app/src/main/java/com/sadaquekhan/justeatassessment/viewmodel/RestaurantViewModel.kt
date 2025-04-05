@@ -1,3 +1,4 @@
+// RestaurantViewModel.kt
 package com.sadaquekhan.justeatassessment.viewmodel
 
 import android.util.Log
@@ -36,6 +37,7 @@ class RestaurantViewModel @Inject constructor(
     fun loadRestaurants(rawPostcode: String) {
         val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
 
+
         if (!isValidPostcode(sanitized)) {
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
@@ -45,7 +47,6 @@ class RestaurantViewModel @Inject constructor(
             )
             return
         }
-
         Log.d("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
 
         viewModelScope.launch {

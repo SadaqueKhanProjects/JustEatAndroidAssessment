@@ -3,6 +3,7 @@ package com.sadaquekhan.justeatassessment.viewmodel
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
 /**
+
  * Represents the full state of the RestaurantScreen UI.
  * Observed via StateFlow in the ViewModel.
  *
