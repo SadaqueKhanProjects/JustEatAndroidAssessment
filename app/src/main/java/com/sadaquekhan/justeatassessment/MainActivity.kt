@@ -7,13 +7,16 @@ import com.sadaquekhan.justeatassessment.ui.screen.RestaurantScreen
 import com.sadaquekhan.justeatassessment.ui.theme.JustEatAndroidAssessmentTheme
 import dagger.hilt.android.AndroidEntryPoint
 
+/**
+ * Main entry point of the app.
+ * Hilt-injected activity that sets the content view using Compose.
+ */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             JustEatAndroidAssessmentTheme {
-                // RestaurantScreen now provides its own ViewModel via hiltViewModel()
                 RestaurantScreen()
             }
         }

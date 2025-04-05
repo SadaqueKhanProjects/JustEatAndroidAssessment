@@ -3,7 +3,10 @@ package com.sadaquekhan.justeatassessment
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
-// Marks this application class as the entry point for Hilt.
-// Hilt will generate required components and handle dependency graph initialization.
+/**
+ * Base application class for the Just Eat Android Assessment.
+ * Annotated with @HiltAndroidApp to enable Hilt's dependency injection.
+ * Initializes the dependency graph automatically at app startup.
+ */
 @HiltAndroidApp
 class JustEatAssessmentApplication : Application()

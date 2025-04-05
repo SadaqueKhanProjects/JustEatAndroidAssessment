@@ -15,10 +15,11 @@ import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 /**
- * ViewModel responsible for:
- * - Managing API interaction
- * - Tracking UI loading/error/empty state
- * - Exposing observable state to the UI
+ * ViewModel for the RestaurantScreen.
+ * Handles:
+ * - Triggering API calls via RestaurantRepository
+ * - Managing and exposing UI state (RestaurantUiState)
+ * - Handling error messages, loading, and empty states
  */
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
@@ -28,15 +29,32 @@ class RestaurantViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(RestaurantUiState())
     val uiState: StateFlow<RestaurantUiState> = _uiState
 
+    private fun isValidPostcode(postcode: String): Boolean {
+        val trimmed = postcode.replace("\\s".toRegex(), "").uppercase()
+        return trimmed.length in 5..8 && trimmed.matches("^[A-Z0-9]+$".toRegex())
+    }
+
     fun loadRestaurants(rawPostcode: String) {
         val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
+
+
+        if (!isValidPostcode(sanitized)) {
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                errorMessage = "Invalid UK postcode. Only 5–8 letters/numbers allowed.",
+                isEmpty = false,
+                hasSearched = true
+            )
+            return
+        }
         Log.d("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
                 errorMessage = null,
-                isEmpty = false
+                isEmpty = false,
+                hasSearched = true
             )
 
             try {

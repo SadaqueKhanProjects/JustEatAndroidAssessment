@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.ui.screen.components
+package com.sadaquekhan.justeatassessment.ui.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -13,6 +13,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
 
+/**
+ * Composable search bar that allows the user to input a UK postcode.
+ * Includes styling, validation UI, and a search button with callback.
+ *
+ * @param value Current text field value (postcode)
+ * @param onValueChange Lambda triggered when the user types
+ * @param onSearch Lambda triggered when the search button is clicked
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
@@ -33,12 +41,10 @@ fun SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .border(2.dp, Color.Black, shape = RoundedCornerShape(14.dp)), // Bold black border
-            shape = RoundedCornerShape(14.dp), // Slightly more prominent corners
+                .border(2.dp, Color.Black, shape = RoundedCornerShape(14.dp)), // Custom border
+            shape = RoundedCornerShape(14.dp),
             singleLine = true,
-            textStyle = LocalTextStyle.current.copy(
-                color = Color.Black
-            ),
+            textStyle = LocalTextStyle.current.copy(color = Color.Black),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search,
                 keyboardType = KeyboardType.Text

@@ -1,59 +1,117 @@
-# 🧱 Architecture Overview – Just Eat Android Assessment
+# 🏗️ Architecture Overview
 
-This app follows a clean **MVVM (Model–View–ViewModel)** architecture, ensuring separation of
-concerns, testability, and scalability — ideal for modern Android development.
-
----
-
-## 🔄 Data Flow (Unidirectional)
-
-User Interaction ↓ Jetpack Compose View ↓ ViewModel (Handles logic & state) ↓ Repository (Handles
-data sources) ↓ Retrofit Service (API Layer) ↓ API Response (JSON → Model) ↓ ViewModel updates state
-↓ Compose re-renders UI
-
+This document outlines the architectural structure and key design principles of the **JustEatAndroidAssessment** project.
 
 ---
 
-## 🗂 Planned Folder Structure
+## 1. 📐 Project Goal
 
-app/ └── data/ └── model/ # Data classes for Restaurant, Cuisine, Address, etc. └── network/ #
-Retrofit interfaces and API config └── domain/ # Repository interface abstraction (optional) └──
-presentation/ └── ui/ # Jetpack Compose UI Screens └── viewmodel/ # State and logic └── components/
-# Reusable UI components (e.g., Card, Loader) └── di/ # Hilt modules (if applied) └── utils/ #
-Constants, mappers, formatters
-
+To develop a **lightweight, modular Android application** using MVVM architecture, modern Android development standards, and a clear separation of concerns — to retrieve and display restaurant data from the Just Eat UK API based on user postcode input.
 
 ---
 
-## 💡 Why MVVM?
+## 2. 🧱 High-Level Architecture
 
-- **Composable architecture**: Each layer has one responsibility.
-- **Testability**: ViewModel logic can be tested independently.
-- **Separation of concerns**: UI, logic, and data are well-isolated.
-- **Scalability**: New features or sources (e.g., cache layer) can be added without disruption.
-- **Compose-friendly**: ViewModel + StateFlow works well with reactive UI updates.
-
----
-
-## 🛠 Technology Map
-
-| Layer          | Library / Tool         | Justification                      |
-|----------------|------------------------|------------------------------------|
-| UI             | Jetpack Compose        | Declarative, modern UI             |
-| Logic          | ViewModel + StateFlow  | Lifecycle-safe & reactive          |
-| Data Layer     | Retrofit + Coroutine   | Clean async HTTP                   |
-| JSON Parsing   | Moshi                  | Fast and flexible                  |
-| DI (Optional)  | Hilt                   | Simplifies injection if used       |
-| Build System   | Gradle with Kotlin DSL | Modern build config                |
-| Min SDK        | API 24                 | Covers most Android devices        |
+| Layer             | Description                                      | Technologies Used                      |
+|------------------|--------------------------------------------------|----------------------------------------|
+| **UI Layer**      | Renders composable functions                    | Jetpack Compose                        |
+| **ViewModel**     | Manages UI state and business logic             | ViewModel + StateFlow                  |
+| **Repository**    | Abstracts the data source                       | Interface + DI-bound implementation    |
+| **Data Layer**    | Handles network and mapping logic               | Retrofit + DTOs + Mapper               |
+| **Domain Layer**  | Holds clean UI-ready models                     | Domain Models (no Android dependencies)|
 
 ---
 
-## 📐 Design Principles
+## 3. 🔄 Data Flow Diagram
 
-- **Single Source of Truth**: UI reads only from ViewModel state
-- **Unidirectional Data Flow (UDF)**: Data moves one way, reducing complexity
-- **Reusability**: Components and models designed to be modular
-- **Minimal Dependencies**: Lean by design to focus on the assessment task
+```
+[User Input]
+      ↓
+[ViewModel]  
+• Validates input  
+• Manages UI state  
+      ↓
+[Repository]  
+• Abstracts data source  
+      ↓
+[Retrofit API Call]  
+• Fetches restaurant data  
+      ↓
+[DTOs → Mapper]  
+• Transforms DTOs to domain models  
+      ↓
+[Domain Models]
+• Clean, UI-ready data  
+      ↓
+[UI (Jetpack Compose)]  
+• Displays restaurant name, rating, cuisines, and address
+```
 
-> _This architecture reflects initial intentions and may evolve during implementation._
+---
+
+## 4. 🧩 Module Breakdown
+
+| Module             | Responsibility                                               |
+|--------------------|-------------------------------------------------------------|
+| `ui/screen`         | Top-level composable screen layout                         |
+| `ui/components`     | Reusable UI pieces (SearchBar, RestaurantItem, etc.)       |
+| `viewmodel`         | UI logic + business rules + StateFlow                      |
+| `domain/model`      | Domain-safe, clean UI-ready data structures                |
+| `data/dto`          | Maps to the JSON API contract from Just Eat                |
+| `data/mapper`       | DTO → Domain transformation logic                          |
+| `data/repository`   | Fetches and processes API data via repository pattern      |
+| `network/api`       | Retrofit service definition                                |
+| `di`                | Hilt modules for dependency injection                      |
+| `docs`              | Architecture, user stories, and dev notes                  |
+| `test/`             | Placeholder for test coverage (unit, UI, integration)      |
+
+---
+
+## 5. 📦 Technology Stack
+
+| Category       | Technology                          |
+|----------------|--------------------------------------|
+| Language       | Kotlin                               |
+| UI             | Jetpack Compose                      |
+| Architecture   | MVVM + StateFlow                     |
+| Networking     | Retrofit + Moshi                     |
+| Async Ops      | Kotlin Coroutines                    |
+| DI Framework   | Hilt                                 |
+| Build System   | Gradle (Kotlin DSL)                  |
+| Testing        | JUnit, Espresso (setup-ready)        |
+| IDE            | Android Studio (Giraffe+)            |
+
+---
+
+## 6. 🧪 Extensibility Considerations
+
+This codebase was designed with future extensibility in mind:
+
+- **Composable UI**: Easy to add filters, sorters, or new UI sections.
+- **Clean MVVM + Repository Separation**: Enables logic reuse across ViewModels or screens.
+- **DTO → Domain Mapping**: Supports future Room, Caching, or Paging integration.
+- **State Encapsulation**: Gracefully handles timeouts, no results, invalid input, or connection issues.
+
+---
+
+## 7. ⚠️ Known Constraints
+
+- **403 Forbidden** responses from broader Just Eat endpoints blocked schema access.
+- **Whitelist assumptions** used for cuisines due to lack of full metadata.
+- **Pagination, sorting, and filtering** were excluded to stay within the intended task scope.
+
+---
+
+## 8. 📈 Suggested Enhancements
+
+| Area              | Improvement Suggestion                                       |
+|-------------------|---------------------------------------------------------------|
+| UI Feedback        | Snackbar/Dialog instead of inline error messages             |
+| Layout Support     | Apply WindowSizeClass for better adaptive UI                 |
+| Testing            | Add mocked ViewModel + Repository tests                      |
+| Metadata           | Integrate Just Eat schema (if publicly available)            |
+| User Experience    | Add shimmer loading, placeholder UIs, and preview annotations |
+
+---
+
+Let me know if you'd like the same level of polish applied to `dev_notes.md`, `README.md`, or if you want this version written directly to your repo as a `.md` file!

@@ -12,16 +12,27 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
+/**
+ * Hilt module responsible for binding interfaces to implementations
+ * and providing singleton instances of network services.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
 
+    /**
+     * Binds RestaurantRepositoryImpl to RestaurantRepository interface.
+     * Enables constructor injection across the app.
+     */
     @Binds
     abstract fun bindRestaurantRepository(
         impl: RestaurantRepositoryImpl
     ): RestaurantRepository
 }
 
+/**
+ * Provides Retrofit and API service instances using Hilt.
+ */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
@@ -30,7 +41,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl("https://uk.api.just-eat.io/") // ✅ Correct base URL
+            .baseUrl("https://uk.api.just-eat.io/")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
     }

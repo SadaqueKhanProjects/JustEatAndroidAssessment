@@ -11,16 +11,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sadaquekhan.justeatassessment.ui.screen.components.RestaurantItem
-import com.sadaquekhan.justeatassessment.ui.screen.components.SearchBar
+import com.sadaquekhan.justeatassessment.ui.components.RestaurantItem
+import com.sadaquekhan.justeatassessment.ui.components.SearchBar
 import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
 
+/**
+ * Main screen composable that renders the search bar, error states,
+ * loading indicator, and a scrollable list of restaurants.
+ *
+ * ViewModel is injected via Hilt. UI state is observed via StateFlow.
+ */
 @Composable
 fun RestaurantScreen() {
     val viewModel: RestaurantViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var postcode by remember { mutableStateOf("") }
-    var showError by remember { mutableStateOf(false) }
     val visibleCount = 10
 
     Log.d("RestaurantScreen", "UI contains ${uiState.restaurants.size} restaurants")
@@ -34,33 +39,21 @@ fun RestaurantScreen() {
             value = postcode,
             onValueChange = {
                 postcode = it
-                showError = false
             },
             onSearch = {
-                if (postcode.trim().length >= 5) {
-                    viewModel.loadRestaurants(postcode)
-                    showError = false
-                } else {
-                    showError = true
-                }
+                viewModel.loadRestaurants(postcode)
             }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         when {
-            showError -> {
-                Text(
-                    text = "Please enter a valid UK postcode.",
-                    color = Color(0xFFB00020), // Strong red
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
             !uiState.errorMessage.isNullOrBlank() -> {
                 Text(
+
                     text = uiState.errorMessage ?: "Something went wrong.",
-                    color = Color(0xFFB00020), // Strong red
+                    color = Color(0xFFB00020),
+
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
@@ -68,8 +61,8 @@ fun RestaurantScreen() {
             uiState.isLoading -> {
                 CircularProgressIndicator(modifier = Modifier.padding(top = 16.dp))
             }
+            uiState.hasSearched && uiState.restaurants.isEmpty() -> {
 
-            uiState.restaurants.isEmpty() -> {
                 Text(
                     text = "No restaurants found.",
                     style = MaterialTheme.typography.bodyMedium

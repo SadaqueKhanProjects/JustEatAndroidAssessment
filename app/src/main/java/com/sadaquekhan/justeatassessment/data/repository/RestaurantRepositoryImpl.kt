@@ -13,14 +13,18 @@ import java.net.URLEncoder
 import javax.inject.Inject
 
 /**
- * Implementation of the RestaurantRepository interface.
- * Handles API communication and mapping to domain models.
+ * Repository implementation that handles API communication and maps data to domain models.
+ * Includes exception handling for network and parsing failures.
  */
 class RestaurantRepositoryImpl @Inject constructor(
     private val apiService: RestaurantApiService,
     private val mapper: RestaurantMapper
 ) : RestaurantRepository {
 
+    /**
+     * Fetches and maps restaurant data from Just Eat API for the given postcode.
+     * Handles API errors gracefully and logs for debugging.
+     */
     override suspend fun getRestaurants(postcode: String): List<Restaurant> {
         return withContext(Dispatchers.IO) {
             try {

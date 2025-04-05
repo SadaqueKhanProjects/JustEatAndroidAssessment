@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.ui.screen.components
+package com.sadaquekhan.justeatassessment.ui.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -9,6 +9,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
+/**
+ * Composable that renders an individual restaurant item.
+ * Displays name, rating, cuisines, and full formatted address.
+ *
+ * @param restaurant The domain-level restaurant model to display
+ */
 @Composable
 fun RestaurantItem(restaurant: Restaurant) {
     Column(
@@ -38,7 +44,7 @@ fun RestaurantItem(restaurant: Restaurant) {
             )
         }
 
-        // Address (now using pre-computed fullAddress)
+        // Address
         if (restaurant.fullAddress.isNotBlank()) {
             Text(
                 text = "Address: ${restaurant.fullAddress}",

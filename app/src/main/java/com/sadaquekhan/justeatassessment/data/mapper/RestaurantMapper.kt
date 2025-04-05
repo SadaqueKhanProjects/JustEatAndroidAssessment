@@ -1,10 +1,14 @@
 package com.sadaquekhan.justeatassessment.data.remote.dto.mapper
 
-import com.sadaquekhan.justeatassessment.data.remote.dto.RestaurantDto
+import com.sadaquekhan.justeatassessment.data.dto.RestaurantDto
 import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import javax.inject.Inject
 
+/**
+ * Responsible for mapping RestaurantDto (from API) into Restaurant domain models (for UI).
+ * Also performs sanitation and formatting of names, cuisines, and addresses.
+ */
 class RestaurantMapper @Inject constructor() {
 
     // ✅ Whitelist of valid cuisine types allowed to display in the UI
@@ -18,7 +22,10 @@ class RestaurantMapper @Inject constructor() {
 
     /**
      * Converts a RestaurantDto into a sanitized domain Restaurant model.
-     * This ensures UI content is clean, user-friendly, and consistent.
+     * Ensures only valid and properly formatted content reaches the UI.
+     *
+     * @param dto Raw restaurant data from API
+     * @return Restaurant model safe for presentation layer
      */
     fun mapToDomainModel(dto: RestaurantDto): Restaurant {
         val sanitizedAddress = sanitizeAndFormatAddress(dto)
@@ -44,33 +51,29 @@ class RestaurantMapper @Inject constructor() {
             .replace(Regex("\\(.*?\\)"), "")         // Remove anything in brackets
             .trim()
 
-        // Tokenize and clean address components
         val addressTokens = listOf(
             address.firstLine,
             address.city,
             address.postalCode
-        ).flatMap { it.split(" ", ",", "-", "–") } // Also split on hyphens
+        ).flatMap { it.split(" ", ",", "-", "–") }
             .map { it.lowercase().trim() }
             .filter { it.isNotBlank() }
 
-        // Remove tokens from name that are part of the address
-        name = name.split(" ", "-", "–", ",") // Split on typical separators
+        name = name.split(" ", "-", "–", ",")
             .filterNot { it.lowercase() in addressTokens }
             .joinToString(" ")
 
-        // Remove dangling punctuation like trailing hyphens or commas
-        name = name
-            .replace(Regex("[-–,]+\\s*$"), "")    // Trailing punctuation
-            .replace(Regex("^\\s*[-–,]+"), "")    // Leading punctuation
-            .replace(Regex("\\s{2,}"), " ")       // Extra spaces
-            .trim()
-
         return name
+            .replace(Regex("[-–,]+\\s*$"), "")
+            .replace(Regex("^\\s*[-–,]+"), "")
+            .replace(Regex("\\s{2,}"), " ")
+            .trim()
     }
 
     /**
      * Filters only known/valid cuisine types from the API response.
-     * Returns an empty list if none are valid.
+     *
+     * @return A list of clean cuisine names safe to show in the UI
      */
     private fun filterValidCuisines(dto: RestaurantDto): List<String> {
         return dto.cuisines
@@ -79,10 +82,10 @@ class RestaurantMapper @Inject constructor() {
     }
 
     /**
-     * Sanitizes address fields according to UK standards:
-     * - Proper casing (e.g., Kilburn High Road)
-     * - Normalized whitespace and punctuation
-     * - Proper postcode format (e.g., SW1A 1AA)
+     * Sanitizes and formats the address fields:
+     * - Proper casing and trimming
+     * - Formats postcode to UK standard (e.g., "W1D4FA" → "W1D 4FA")
+     * - Removes city/postcode repetition from first line
      */
     private fun sanitizeAndFormatAddress(dto: RestaurantDto): Address {
         val rawFirstLine = dto.address.firstLine.trim()
@@ -111,16 +114,16 @@ class RestaurantMapper @Inject constructor() {
     }
 
     /**
-     * Normalizes casing, whitespace, and symbols within a given address string.
-     * Ensures proper sentence-style formatting for both city and firstLine.
+     * Normalizes casing, whitespace, and symbols within address strings.
+     * Example: "  kilburn   high   ROAD ,,, " → "Kilburn High Road"
      */
     private fun normalizeAddressComponent(raw: String): String {
         return raw
-            .replace(Regex("[,\\-–]{2,}"), ",")       // Normalize repeated commas/dashes
-            .replace(Regex("\\s{2,}"), " ")           // Collapse multiple spaces
-            .replace(Regex(",\\s*,"), ",")            // Fix duplicate commas
-            .replace(Regex("[\\s,]+\$"), "")          // Remove trailing comma/space
-            .replace(Regex("^\\s*,*"), "")            // Remove leading comma/space
+            .replace(Regex("[,\\-–]{2,}"), ",")
+            .replace(Regex("\\s{2,}"), " ")
+            .replace(Regex(",\\s*,"), ",")
+            .replace(Regex("[\\s,]+\$"), "")
+            .replace(Regex("^\\s*,*"), "")
             .split(" ")
             .joinToString(" ") { it.lowercase().replaceFirstChar { c -> c.uppercaseChar() } }
             .trim()
