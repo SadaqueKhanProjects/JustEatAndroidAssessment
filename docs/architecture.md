@@ -113,5 +113,3 @@ This codebase was designed with future extensibility in mind:
 | User Experience    | Add shimmer loading, placeholder UIs, and preview annotations |
 
 ---
-
-Let me know if you'd like the same level of polish applied to `dev_notes.md`, `README.md`, or if you want this version written directly to your repo as a `.md` file!
