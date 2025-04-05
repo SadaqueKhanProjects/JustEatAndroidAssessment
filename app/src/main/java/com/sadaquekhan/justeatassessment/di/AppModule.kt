@@ -1,7 +1,9 @@
 package com.sadaquekhan.justeatassessment.di
 
-import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepository
+import com.sadaquekhan.justeatassessment.data.remote.dto.mapper.RestaurantMapper
+import com.sadaquekhan.justeatassessment.data.repository.IRestaurantRepository
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepositoryImpl
+import com.sadaquekhan.justeatassessment.domain.mapper.IRestaurantMapper
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
 import com.sadaquekhan.justeatassessment.util.AndroidLogger
 import com.sadaquekhan.justeatassessment.util.Logger
@@ -15,8 +17,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 /**
- * Hilt module responsible for binding interfaces to implementations
- * and providing singleton instances of repositories and services.
+ * Hilt module responsible for binding implementations to interfaces.
+ * This ensures that dependencies can be injected where needed
+ * using clean architecture principles.
  */
 @Module
 @InstallIn(SingletonComponent::class)
@@ -24,20 +27,37 @@ abstract class AppModule {
 
     /**
      * Binds RestaurantRepositoryImpl to RestaurantRepository interface.
+     * Allows for flexibility and testability across the app.
      */
     @Binds
     abstract fun bindRestaurantRepository(
         impl: RestaurantRepositoryImpl
-    ): RestaurantRepository
+    ): IRestaurantRepository
+
+
+
+    /**
+     * Binds RestaurantMapper to the IRestaurantMapper interface.
+     * Enables interface-based injection and mocking during testing.
+     */
+    @Binds
+    abstract fun bindRestaurantMapper(
+        impl: RestaurantMapper
+    ): IRestaurantMapper
 }
 
 /**
- * Provides network and logging dependencies using Hilt.
+ * Hilt module that provides external dependencies like Retrofit and Logger.
+ * Singleton scope ensures one instance is shared across the app lifecycle.
  */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    /**
+     * Provides a configured Retrofit instance for network calls.
+     * Uses Moshi for JSON serialization and deserialization.
+     */
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit {
@@ -47,6 +67,10 @@ object NetworkModule {
             .build()
     }
 
+    /**
+     * Provides an implementation of RestaurantApiService using Retrofit.
+     * Allows for type-safe API requests based on defined endpoints.
+     */
     @Provides
     @Singleton
     fun provideRestaurantApiService(retrofit: Retrofit): RestaurantApiService {
@@ -54,8 +78,8 @@ object NetworkModule {
     }
 
     /**
-     * Provides the platform-specific logger for Android.
-     * For tests, replace this with FakeLogger via @TestInstallIn.
+     * Provides an Android-specific logger implementation.
+     * Can be swapped out with a fake logger during tests using @TestInstallIn.
      */
     @Provides
     @Singleton

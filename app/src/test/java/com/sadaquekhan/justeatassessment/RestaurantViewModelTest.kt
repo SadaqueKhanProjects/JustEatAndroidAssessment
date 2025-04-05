@@ -1,7 +1,7 @@
 package com.sadaquekhan.justeatassessment
 
 import com.google.common.truth.Truth.assertThat
-import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepository
+import com.sadaquekhan.justeatassessment.data.repository.IRestaurantRepository
 import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.util.FakeLogger
@@ -100,7 +100,7 @@ class RestaurantViewModelTest {
     /**
      * A fake implementation of RestaurantRepository to simulate different test scenarios.
      */
-    class FakeRestaurantRepository : RestaurantRepository {
+    class FakeRestaurantRepository : IRestaurantRepository {
 
         var shouldReturnEmptyList = false
         var shouldThrowTimeout = false
