@@ -1,11 +1,10 @@
-// RestaurantViewModel.kt
 package com.sadaquekhan.justeatassessment.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepository
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
+import com.sadaquekhan.justeatassessment.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
-    private val repository: RestaurantRepository
+    private val repository: RestaurantRepository,
+    private val logger: Logger // Inject logger for platform-agnostic logging
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(RestaurantUiState())
@@ -37,7 +37,6 @@ class RestaurantViewModel @Inject constructor(
     fun loadRestaurants(rawPostcode: String) {
         val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
 
-
         if (!isValidPostcode(sanitized)) {
             _uiState.value = _uiState.value.copy(
                 isLoading = false,
@@ -47,7 +46,8 @@ class RestaurantViewModel @Inject constructor(
             )
             return
         }
-        Log.d("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
+
+        logger.debug("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
@@ -67,21 +67,21 @@ class RestaurantViewModel @Inject constructor(
                     errorMessage = null
                 )
             } catch (e: SocketTimeoutException) {
-                Log.e("RestaurantViewModel", "TimeoutException: ${e.localizedMessage}")
+                logger.error("RestaurantViewModel", "TimeoutException: ${e.localizedMessage}")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "Server timeout. Please try again shortly.",
                     isEmpty = false
                 )
             } catch (e: IOException) {
-                Log.e("RestaurantViewModel", "IOException: ${e.localizedMessage}")
+                logger.error("RestaurantViewModel", "IOException: ${e.localizedMessage}")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "No internet connection. Please check your network.",
                     isEmpty = false
                 )
             } catch (e: Exception) {
-                Log.e("RestaurantViewModel", "Unhandled error: ${e.localizedMessage}")
+                logger.error("RestaurantViewModel", "Unhandled error: ${e.localizedMessage}")
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "Something went wrong. Please try again later.",
