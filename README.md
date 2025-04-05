@@ -1,166 +1,202 @@
-
 # JustEatAndroidAssessment
 
-A Kotlin-based Android app developed for the Just Eat Takeaway.com Early Careers Mobile Engineering Program.
+A Kotlin-based Android application developed as part of the **Just Eat Takeaway.com Early Careers Mobile Engineering Program**.
 
-This assignment demonstrates **API integration**, **MVVM architecture**, **Jetpack Compose UI**, and **agile-style planning** — focused on retrieving and displaying restaurant data based on a UK postcode.
+This solution demonstrates **MVVM architecture**, **Jetpack Compose**, and **modular API-driven development** — enabling users to query and view restaurant data via UK postcode.
 
 ---
 
-## Candidate Info
+## Candidate
 
 - **Name:** Sadaque Khan
 - **GitHub:** [github.com/SadaqueKhanProjects](https://github.com/SadaqueKhanProjects)
 
 ---
 
-## Assignment Objective
+## Overview
 
-Using Just Eat’s API:
+The project fulfills the following criteria:
 
-- Fetch restaurant data for a given UK postcode
-- Extract and display 4 key data points:
-  - Restaurant Name
-  - Rating / Stars
-  - Cuisine Type
-  - Address (UK Format)
+- Query Just Eat’s API by postcode
+- Extract and display:
+  - ✅ Restaurant name
+  - ✅ Cuisine types
+  - ✅ Star rating (if available)
+  - ✅ Address
+- Render first 10 results using clean, scalable UI components
 
 ---
 
-## Architecture & Planning
+## Demo
 
-- Architecture Doc: [`docs/architecture.md`](docs/architecture.md)
-- User Stories: [`docs/user_stories.md`](docs/user_stories.md)
-- Task Board: [GitHub Project](https://github.com/SadaqueKhanProjects/JustEatAndroidAssessment/projects)
+GIF captured on **Samsung S22 Ultra**:
+
+![Demo](docs/SamsungS22UltraDemo.gif)
+
+---
+
+## Architecture
+
+| Layer            | Responsibility                            | Implementation                            |
+|------------------|--------------------------------------------|--------------------------------------------|
+| **Network**       | API communication                         | Retrofit + Moshi                           |
+| **Repository**    | Abstract data source access               | Repository pattern w/ DI                   |
+| **Domain Model**  | Clean, mapped restaurant entities         | DTO → Mapper → Domain                      |
+| **State Layer**   | Manage UI state reactively                | Kotlin `StateFlow`                         |
+| **UI Layer**      | Compose UI rendering and interaction      | Material3, reusable composables            |
+
+> For architecture decisions, see [`docs/architecture.md`](docs/architecture.md)  
+> For user-focused planning, see [`docs/user_stories.md`](docs/user_stories.md)  
+> GitHub Kanban Board: [Just Eat Assessment Project](https://github.com/users/SadaqueKhanProjects/projects/1/views/1)
 
 ---
 
 ## Tech Stack
 
-| Layer         | Tech Used                          |
-|--------------|-------------------------------------|
-| Language      | Kotlin                             |
-| UI            | Jetpack Compose                    |
-| Architecture  | MVVM (ViewModel + StateFlow)       |
-| Networking    | Retrofit + Moshi                   |
-| Asynchrony    | Kotlin Coroutines                  |
-| Build System  | Gradle (Kotlin DSL)                |
-| Min SDK       | 24 (Android 7.0)                   |
-| IDE           | Android Studio (Electric Eel+)     |
+- **Language**: Kotlin
+- **Architecture**: MVVM + Clean Architecture
+- **UI Toolkit**: Jetpack Compose (Material3)
+- **Async**: Coroutines
+- **Networking**: Retrofit + Moshi
+- **Dependency Injection**: Hilt
+- **Testing**: JUnit + Android Instrumentation
+- **Build System**: Gradle (Kotlin DSL)
 
 ---
 
-## Getting Started
-
-### Clone the Repository
+## Setup
 
 ```bash
 git clone https://github.com/SadaqueKhanProjects/JustEatAndroidAssessment.git
 cd JustEatAndroidAssessment
-```
 
-### Open in Android Studio
+Then:
+	1.	Open in Android Studio (Electric Eel+)
+	2.	Sync Gradle
+	3.	Run app on emulator or device (API 24+)
 
-- Open the project folder in Android Studio.
-- Let Gradle sync finish.
+⸻
 
-### Run the App
+Key Considerations
 
-- Select a device/emulator.
-- Click Run ▶️ from Android Studio.
+1. Restaurant Name
+	•	Applied basic sanitation (e.g., trimmed trailing dashes, removed social handles)
+	•	Avoided over-aggressive filtering to preserve identity
+	•	Did not implement a full blacklist engine due to lack of exhaustive dataset
 
----
+2. Cuisine Type
+	•	Used whitelist-based inclusion of trusted values (e.g., Pizza, Halal)
+	•	API inconsistency made untrusted cuisine entries unreliable
+	•	Removed cuisines entirely if no value was present to avoid rendering [empty]
 
-## 📊 Assumptions, Considerations & Solutions
+⸻
 
----
+3. Rating / Stars
+	•	Displayed only if rating object exists in API response
+	•	No default values assigned (e.g., 0.0), which could misrepresent the restaurant
 
-### 🏷️ Restaurant Name
+⸻
 
-**Assumptions & Challenges:**
-- Some restaurant names from the API included **non-essential or noisy tokens** such as:
-  - Trailing dashes: `“Bento Box -”`
-  - Embedded address fragments: `“Sushi Daily - London Bridge”`
-  - Social media handles or branding noise
+4. Address Formatting
+	•	Most address data was well-structured (firstLine, city, postalCode)
+	•	Performed light normalization for consistent spacing
+	•	No advanced parsing or validation required
 
-**Implemented Solution:**
-- Applied **light name sanitization** using string processing to trim:
-  - Trailing `-` and brackets
-  - Obvious non-name fragments
+⸻
 
-**Considered but Not Implemented:**
-- A **blacklist-based rule engine** was avoided due to **lack of full dataset access**.
+Limitations Due to API Access
 
-**If Full Data Was Available:**
-- Frequency-based detection could classify “junk” tokens.
-- Normalize and group variants of restaurant brands.
+Due to limited API access, metadata/schema information was unavailable. This restricted:
+	•	Dynamic classification of cuisines
+	•	Validation rule generation
+	•	Error bucket mapping
 
----
+⸻
 
-### ⭐ Rating / Stars
+Why More Data Would Help
 
-**Assumptions & Challenges:**
-- API returns a `starRating` float inside a `rating` object reliably.
+Having access to:
+	•	✅ Master list of cuisines
+	•	✅ Metadata schema (field length, type)
+	•	✅ Known edge cases or error entry formats
 
-**Implemented Solution:**
-- Used directly with **no transformations or assumptions**.
+…would improve validation, clustering, and output quality.
 
----
+⸻
 
-### 🍽️ Cuisine Type
+Ideal Cuisine Handling Flow
 
-**Assumptions & Challenges:**
-- Inconsistent or ambiguous cuisine values from the API.
++--------------------------+
+|  Full Dataset/API        |
+|  Access Granted          |
++--------------------------+
+           |
+           v
++--------------------------+     Group all cuisines
+| Extract All Unique       |--------------------------------------+
+| Cuisines                 |                                      |
++--------------------------+                                      |
+           |                                                     v
++--------------------------+     +-----------------------------+ 
+| Cluster by Tags          | --> | Create Master Taxonomy      | 
+| / Frequencies            |     | (e.g., Pizza, Indian)       | 
++--------------------------+     +-----------------------------+ 
+           |                               |                        
+           v                               v                        
++--------------------------+     +-----------------------------+ 
+| Validate with Metadata   |     | Map Unknown to Closest      | 
+| or API Schema            |     | or “Other” bucket           | 
++--------------------------+     +-----------------------------+ 
 
-**Implemented Solution:**
-- **Whitelist-based filtering** applied using well-known cuisines (e.g., “Pizza”, “Halal”, “Mexican”).
 
-**Why Whitelist:**
-- Finite number of logical cuisines.
-- Executing all postcodes to gather more data was **not feasible** due to time limits and API restrictions.
 
-**Attempted Data Expansion:**
-- Tried querying alternative endpoints for metadata or broader results.
-- Received `403 Forbidden` — likely due to public API protection and authentication barriers.
+⸻
 
-**Ideal Future Approach:**
-- Use full metadata or schema to dynamically validate and group cuisines.
+Example Limitation
 
----
+API Request        →   Sanitization       →   Domain Model
+/restaurants       →   “Pizza Hut–London” →   “Pizza Hut”
+                   →   “French/??!”       →   [excluded]
 
-### 🧭 Address (UK Format)
 
-**Status:**
-- Address data (`firstLine`, `city`, `postalCode`) was **clean and properly structured**.
-- No special sanitization required beyond spacing adjustments.
 
----
+⸻
 
-## Device Compatibility & Visual Feedback
+UI Testing & Compatibility
+	•	Tested on:
+	•	✅ Pixel 6 Emulator (API 34)
+	•	✅ Samsung S22 Ultra (API 14)
+	•	Jetpack Compose + Material3 ensures wide compatibility and theme consistency
 
-- Tested on:
-  - **Pixel 6 Emulator (API 34)**
-  - **Samsung S22 Ultra (API 14)**
-- Differences in UI appearance (e.g. spacing, font size) are expected due to:
-  - Varying screen densities
-  - System font scaling
-  - OEM-level theming
+⸻
 
----
+UX & Interaction Model
+	•	Postcode Validation: Enforced via regex + length constraints (5–8 alphanum)
+	•	Loading Indicators: Shown during network calls
+	•	Error Handling: Differentiates no results vs. timeout vs. invalid input
+	•	Extensibility: ViewModel and state layers easily accept enhancements
 
-## 🔧 Suggested Improvements
+⸻
 
-- **Consistent UI Across Devices**  
-  Some UI components (like the search bar and error messages) may appear differently depending on screen size, resolution, or font scaling settings. Using a more standardized spacing and typography system via `MaterialTheme` ensures a **consistent and polished experience**, no matter what phone the user is on.
+Why Features Weren’t Added
 
-- **More Intuitive Error Feedback**  
-  Presenting error messages via **dialogs or snackbars**—instead of inline text—mirrors how most apps provide feedback. This instantly communicates that “something went wrong” in a way that’s **familiar, unobtrusive, and human-centric**, reducing the chance users miss important messages.
+This solution focused on core requirements. Additional features such as:
+	•	Sorting
+	•	Filtering
+	•	Infinite scroll
+	•	State persistence
 
-- **UI Confidence Across Devices**  
-  The app was tested on:
-  - Pixel 6 Emulator (API 34)
-  - Samsung S22 Ultra (API 14)
+…were not added to stay within brief scope. The underlying codebase is:
+	•	Modular (separated by feature and domain)
+	•	Composable (easy to extend screens or models)
+	•	Clean (minimal UI coupling)
 
-  To ensure a more universal experience, further testing on modern devices with varied screen densities would help catch any unexpected layout shifts or usability issues.
+So any future enhancement can plug into existing pipelines with ease.
+
+⸻
+
+License
+
+This repository is part of an educational coding assessment. No commercial license included.
 
 ---
