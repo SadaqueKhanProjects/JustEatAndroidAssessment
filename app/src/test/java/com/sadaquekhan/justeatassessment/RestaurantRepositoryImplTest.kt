@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.repository
+package com.sadaquekhan.justeatassessment
 
 import com.google.common.truth.Truth.assertThat
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepositoryImpl
