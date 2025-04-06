@@ -23,18 +23,24 @@ import javax.inject.Inject
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
     private val repository: IRestaurantRepository,
-    private val logger: Logger // Inject logger for platform-agnostic logging
-) : ViewModel() {
+    private val logger: Logger
+) : ViewModel(), IRestaurantViewModel {
 
+    // Mutable state to manage UI updates
     private val _uiState = MutableStateFlow(RestaurantUiState())
-    val uiState: StateFlow<RestaurantUiState> = _uiState
+    override val uiState: StateFlow<RestaurantUiState> = _uiState
 
+    // Utility function to validate UK postcode
     private fun isValidPostcode(postcode: String): Boolean {
         val trimmed = postcode.replace("\\s".toRegex(), "").uppercase()
         return trimmed.length in 5..8 && trimmed.matches("^[A-Z0-9]+$".toRegex())
     }
 
-    fun loadRestaurants(rawPostcode: String) {
+    /**
+     * Loads the restaurants based on the provided postcode.
+     * Updates the UI state with loading, success, or error states.
+     */
+    override fun loadRestaurants(rawPostcode: String) {
         val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
 
         if (!isValidPostcode(sanitized)) {
@@ -49,6 +55,7 @@ class RestaurantViewModel @Inject constructor(
 
         logger.debug("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
 
+        // Launch the data loading in a coroutine
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,

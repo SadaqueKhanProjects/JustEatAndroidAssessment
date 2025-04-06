@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -19,14 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
  *
  * @param value Current text field value (postcode)
  * @param onValueChange Lambda triggered when the user types
- * @param onSearch Lambda triggered when the search button is clicked
+ * @param onSearch Lambda triggered when the search button is clicked with the current postcode
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit,
-    onSearch: () -> Unit
+    onSearch: (String) -> Unit // Changed to take a String parameter
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         TextField(
@@ -41,7 +42,8 @@ fun SearchBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .border(2.dp, Color.Black, shape = RoundedCornerShape(14.dp)), // Custom border
+                .border(2.dp, Color.Black, shape = RoundedCornerShape(14.dp))
+                .testTag("search_bar"),
             shape = RoundedCornerShape(14.dp),
             singleLine = true,
             textStyle = LocalTextStyle.current.copy(color = Color.Black),
@@ -59,10 +61,11 @@ fun SearchBar(
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
-            onClick = onSearch,
+            onClick = { onSearch(value) }, // Pass the current value to onSearch
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .height(48.dp)
+                .testTag("search_button"),
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(

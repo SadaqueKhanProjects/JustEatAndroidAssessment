@@ -1,0 +1,6 @@
+package com.sadaquekhan.justeatassessment
+
+import dagger.hilt.android.testing.CustomTestApplication
+
+@CustomTestApplication(JustEatAssessmentApplication::class)
+interface IJustEatAssessmentTestApplication
