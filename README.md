@@ -148,4 +148,3 @@ Renders cleanly across modern screen sizes and densities. Font scaling is suppor
 
 This application was developed solely for the **Just Eat Takeaway Android Coding Assessment**.  
 It is not intended for commercial deployment or distribution.
-```
