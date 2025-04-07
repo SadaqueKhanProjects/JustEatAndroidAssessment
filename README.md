@@ -104,6 +104,8 @@ Then:
 - Expand **unit and UI test coverage** for edge cases and input validation logic
 - Improve **name parsing** using NLP or branded keyword datasets
 - **Postcode Validation Enhancement**: The current regex covers most valid UK postcodes but may not encompass all edge cases. In the future, it will integrate a more comprehensive validation solution using a third-party **postcode validation service** or an **up-to-date postcode database** to ensure complete coverage of all possible formats.
+- Cuisine Data Management: Instead of hardcoding valid cuisines, the list will be cached in a local database (e.g., Room or SharedPreferences) and dynamically updated via an API or offline resource. This approach ensures the list stays up-to-date, scalable, and improves performance without requiring code changes.
+- Responsive UI for Different Devices: The app's UI will be improved to be fully responsive across different devices and screen sizes. This will involve more advanced layout techniques and testing to ensure that UI elements render consistently, providing the same user experience on various devices.
 
 ---
 
@@ -125,7 +127,7 @@ Then:
 - Pixel 6 Emulator (API 34)
 - Samsung S22 Ultra (API 34)
 
-Renders cleanly across modern screen sizes and densities. Font scaling is supported with minimal shift.
+Renders cleanly across modern screen sizes and densities.
 
 ---
 
