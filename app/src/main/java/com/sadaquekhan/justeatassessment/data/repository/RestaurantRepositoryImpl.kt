@@ -43,7 +43,10 @@ class RestaurantRepositoryImpl @Inject constructor(
                 val encodedPostcode = URLEncoder.encode(postcode.trim(), "UTF-8")
                     .replace("+", "%20") // "+" is converted from spaces; must revert to "%20"
 
-                logger.debug("RestaurantRepository", "API call started for postcode: $encodedPostcode")
+                logger.debug(
+                    "RestaurantRepository",
+                    "API call started for postcode: $encodedPostcode"
+                )
 
                 val response = apiService.getRestaurantsByPostcode(encodedPostcode)
 
@@ -52,13 +55,19 @@ class RestaurantRepositoryImpl @Inject constructor(
                     val dtoList = response.body()?.restaurants
                         ?: throw Exception("Unexpected null response body")
 
-                    logger.debug("RestaurantRepository", "API success. Restaurants fetched: ${dtoList.size}")
+                    logger.debug(
+                        "RestaurantRepository",
+                        "API success. Restaurants fetched: ${dtoList.size}"
+                    )
 
                     dtoList.map { mapper.mapToDomainModel(it) }
 
                 } else {
                     // Log and throw descriptive error for HTTP failures
-                    logger.error("RestaurantRepository", "API error ${response.code()}: ${response.message()}")
+                    logger.error(
+                        "RestaurantRepository",
+                        "API error ${response.code()}: ${response.message()}"
+                    )
                     throw IOException("API error ${response.code()}: ${response.message()}")
                 }
 

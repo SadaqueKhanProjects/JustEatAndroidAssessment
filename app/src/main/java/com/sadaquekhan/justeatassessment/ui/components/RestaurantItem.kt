@@ -49,6 +49,7 @@ fun RestaurantItem(
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.testTag("restaurant_rating_${restaurant.id}")
             )
+
             else -> Text(
                 text = "Rating: ${"%.1f".format(restaurant.rating)}",
                 style = MaterialTheme.typography.bodyMedium,

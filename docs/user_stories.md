@@ -1,10 +1,11 @@
 # 📘 User Stories – Just Eat Android Assessment
 
-This document outlines agile-style user stories and tasks that guided the development process using GitHub Projects.
+This document outlines agile-style user stories and tasks that guided the development process using
+GitHub Projects.
 
 ---
 
-##  Display Restaurants by Postcode given an API endpoint
+## Display Restaurants by Postcode given an API endpoint
 
 ---
 
@@ -17,6 +18,7 @@ This document outlines agile-style user stories and tasks that guided the develo
 **Effort**: 5 points
 
 **Tasks**:
+
 - Confirm Just Eat endpoint structure via Postman
 - Set up Retrofit client and base URL
 - Create API interface and DTO models
@@ -35,6 +37,7 @@ This document outlines agile-style user stories and tasks that guided the develo
 **Effort**: 3 points
 
 **Tasks**:
+
 - Build Compose LazyColumn to display restaurant items
 - Show restaurant name, cuisines, and rating
 - Limit visible list to top 10 results
@@ -52,6 +55,7 @@ This document outlines agile-style user stories and tasks that guided the develo
 **Effort**: 3 points
 
 **Tasks**:
+
 - Create ViewModel and connect it to repository
 - Use StateFlow to expose UI state to composables
 - Organize folders into domain, data, and presentation layers
@@ -68,6 +72,7 @@ This document outlines agile-style user stories and tasks that guided the develo
 **Effort**: 2 points
 
 **Tasks**:
+
 - Catch network errors such as IOExceptions and timeouts
 - Display meaningful error messages via composables
 - Avoid showing "No restaurants found" on initial load
@@ -84,6 +89,7 @@ This document outlines agile-style user stories and tasks that guided the develo
 **Effort**: 1 point
 
 **Tasks**:
+
 - Sanitize and validate input (alphanumeric, 5–8 characters)
 - Disallow symbols and malformed formats
 - Show a clear error message for invalid postcodes

@@ -17,7 +17,8 @@ class FakeRestaurantMapper : IRestaurantMapper {
             id = dto.id,
             name = dto.name, // No name cleaning or sanitation
             cuisines = dto.cuisines.map { it.name },
-            rating = dto.rating?.starRating ?: 0.0, // Null ratings default to 0.0 for test stability
+            rating = dto.rating?.starRating
+                ?: 0.0, // Null ratings default to 0.0 for test stability
             address = Address(
                 firstLine = dto.address.firstLine,
                 city = dto.address.city,

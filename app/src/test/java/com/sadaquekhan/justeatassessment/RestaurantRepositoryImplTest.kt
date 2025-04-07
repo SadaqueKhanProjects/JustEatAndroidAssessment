@@ -106,7 +106,8 @@ class RestaurantRepositoryImplTest {
             assertThat(e.message).contains("No internet connection")
 
             // Verify that proper error log was recorded
-            assertThat(logger.getLogs().any { it.isError && "Network error" in it.message }).isTrue()
+            assertThat(
+                logger.getLogs().any { it.isError && "Network error" in it.message }).isTrue()
         }
     }
 
@@ -149,7 +150,8 @@ class RestaurantRepositoryImplTest {
             throw AssertionError("Expected generic exception but got none")
         } catch (e: Exception) {
             assertThat(e.message).contains("Something went wrong")
-            assertThat(logger.getLogs().any { it.isError && "Unexpected error" in it.message }).isTrue()
+            assertThat(
+                logger.getLogs().any { it.isError && "Unexpected error" in it.message }).isTrue()
         }
     }
 
