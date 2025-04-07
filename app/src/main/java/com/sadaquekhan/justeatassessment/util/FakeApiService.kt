@@ -5,10 +5,15 @@ import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
 import retrofit2.Response
 
 /**
- * Fake API service that returns predefined responses.
- * Allows testing without real network calls.
+ * Fake implementation of [RestaurantApiService] for testing network interactions.
+ *
+ * Allows simulation of:
+ * - Successful responses
+ * - Thrown exceptions
+ * - Controlled request tracking
  */
 class FakeApiService : RestaurantApiService {
+
     var mockResponse: Response<RestaurantResponseDto> =
         Response.success(RestaurantResponseDto(emptyList()))
 

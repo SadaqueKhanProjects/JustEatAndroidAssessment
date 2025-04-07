@@ -1,12 +1,20 @@
 package com.sadaquekhan.justeatassessment.util
 
 /**
- * Fake logger that captures logs for verification in tests.
- * Replaces Android's Log class in test environments.
+ * Fake logger for use in unit tests.
+ * Captures logs internally for assertions and inspection.
  */
 class FakeLogger : Logger {
+
     private val logs = mutableListOf<LogEntry>()
 
+    /**
+     * Represents a single log entry.
+     *
+     * @property tag Logging tag
+     * @property message Message content
+     * @property isError True if this was an error log
+     */
     data class LogEntry(
         val tag: String,
         val message: String,
@@ -14,15 +22,15 @@ class FakeLogger : Logger {
     )
 
     override fun debug(tag: String, message: String) {
-        logs.add(LogEntry(tag, message, false))
+        logs.add(LogEntry(tag, message, isError = false))
     }
 
     override fun error(tag: String, message: String) {
-        // Fallback to exception class name if message is null
         val formatted = if (message.isBlank()) "Unknown error" else message
-        logs.add(LogEntry(tag, formatted, true))
+        logs.add(LogEntry(tag, formatted, isError = true))
     }
 
-    fun getLogs() = logs.toList()
+    fun getLogs(): List<LogEntry> = logs.toList()
+
     fun clear() = logs.clear()
 }

@@ -6,29 +6,18 @@ import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.domain.mapper.IRestaurantMapper
 
 /**
- * Fake implementation of [IRestaurantMapper] for unit testing.
- * Features:
- * - Bypasses real sanitization logic
- * - Provides predictable outputs
- * - Handles null ratings safely
- * - Maintains consistent postcode formatting
+ * Simplified [IRestaurantMapper] for unit testing.
  *
- * Usage: Inject this instead of real mapper to isolate tests from mapping logic
+ * Bypasses sanitization logic and provides predictable output for test validation.
  */
 class FakeRestaurantMapper : IRestaurantMapper {
 
-    /**
-     * Simplified mapping that:
-     * 1. Preserves all DTO values exactly (no sanitization)
-     * 2. Formats postcodes consistently
-     * 3. Safely handles null ratings (defaults to 0.0)
-     */
     override fun mapToDomainModel(dto: RestaurantDto): Restaurant {
         return Restaurant(
             id = dto.id,
-            name = dto.name, // No name cleaning
-            cuisines = dto.cuisines?.map { it.name } ?: emptyList(), // Null-safe
-            rating = dto.rating?.starRating ?: 0.0, // Null-safe
+            name = dto.name, // No name cleaning or sanitation
+            cuisines = dto.cuisines.map { it.name },
+            rating = dto.rating?.starRating ?: 0.0, // Null ratings default to 0.0 for test stability
             address = Address(
                 firstLine = dto.address.firstLine,
                 city = dto.address.city,
@@ -38,10 +27,8 @@ class FakeRestaurantMapper : IRestaurantMapper {
     }
 
     /**
-     * Standardizes UK postcode format without validation.
-     * Example transforms:
-     * - "ec1a1bb" → "EC1A 1BB"
-     * - "N1 9GU" → "N1 9GU" (no change)
+     * Normalizes UK postcode format.
+     * - e.g., "ec1a1bb" → "EC1A 1BB"
      */
     fun formatPostcode(postcode: String): String {
         return postcode
