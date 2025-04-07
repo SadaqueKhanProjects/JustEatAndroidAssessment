@@ -16,7 +16,7 @@ import javax.inject.Inject
  * ViewModel responsible for managing restaurant data and screen state.
  *
  * Responsibilities:
- * - Validates postcodes before querying
+ * - Validates and transforms user postcode
  * - Fetches restaurants from repository layer
  * - Exposes [RestaurantUiState] to the UI via [StateFlow]
  * - Handles loading, error, and empty result conditions
@@ -73,9 +73,9 @@ class RestaurantViewModel @Inject constructor(
     }
 
     /**
-     * Validates a user-entered postcode and transforms it to a standard UK format.
-     * - Uppercases
-     * - Reduces multiple spaces to one
+     * Validates a user-entered postcode and transforms it to API-compliant format.
+     * - Removes all spaces
+     * - Uppercases the input
      * - Ensures it matches UK postcode regex
      *
      * @return A [ValidationResult] indicating whether input is usable
@@ -85,7 +85,7 @@ class RestaurantViewModel @Inject constructor(
 
         val sanitized = rawPostcode
             .trim()
-            .replace("\\s+".toRegex(), " ")
+            .replace("\\s+".toRegex(), "") // Remove all spacing for API compatibility
             .uppercase()
 
         return if (isValidPostcode(sanitized)) {
@@ -99,7 +99,7 @@ class RestaurantViewModel @Inject constructor(
      * Performs the actual API call via repository and updates the UI state accordingly.
      * Called only when postcode passes validation.
      *
-     * @param sanitizedPostcode A cleaned, properly formatted UK postcode
+     * @param sanitizedPostcode A cleaned, compact UK postcode (e.g., "EC4M7RF")
      */
     private fun loadValidatedRestaurants(sanitizedPostcode: String) {
         logger.debug("RestaurantViewModel", "Loading restaurants for postcode: $sanitizedPostcode")
@@ -146,12 +146,9 @@ class RestaurantViewModel @Inject constructor(
 
     /**
      * Regex-based UK postcode format validation.
-     * Supports formats like:
-     * - EC1A 1BB
-     * - W1A 0AX
-     * - M1 1AE
+     * Only accepts postcodes without spaces (e.g., "EC4M7RF").
      */
     private fun isValidPostcode(postcode: String): Boolean {
-        return postcode.matches("^[A-Z]{1,2}[0-9][0-9A-Z]? ?[0-9][A-Z]{2}$".toRegex())
+        return postcode.matches("^[A-Z]{1,2}[0-9][0-9A-Z]?[0-9][A-Z]{2}$".toRegex())
     }
 }

@@ -8,7 +8,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.net.SocketTimeoutException
-import java.net.URLEncoder
 import javax.inject.Inject
 
 /**
@@ -29,29 +28,25 @@ class RestaurantRepositoryImpl @Inject constructor(
 
     /**
      * Retrieves and maps a list of restaurants based on the provided UK postcode.
+     * - Assumes postcode has already been validated and stripped of spaces
      * - Handles HTTP errors, network failures, and unexpected null payloads
      * - Applies domain mapping before returning to the ViewModel
      *
-     * @param postcode The user-entered UK postcode (e.g., "EC4M 7RF")
+     * @param postcode The cleaned UK postcode (e.g., "EC4M7RF")
      * @return A list of sanitized [Restaurant] domain models
      * @throws IOException For network/API-related failures
      */
     override suspend fun getRestaurants(postcode: String): List<Restaurant> {
         return withContext(Dispatchers.IO) {
             try {
-                // Encode postcode for safe HTTP transmission
-                val encodedPostcode = URLEncoder.encode(postcode.trim(), "UTF-8")
-                    .replace("+", "%20") // "+" is converted from spaces; must revert to "%20"
-
                 logger.debug(
                     "RestaurantRepository",
-                    "API call started for postcode: $encodedPostcode"
+                    "API call started for postcode: $postcode"
                 )
 
-                val response = apiService.getRestaurantsByPostcode(encodedPostcode)
+                val response = apiService.getRestaurantsByPostcode(postcode)
 
                 if (response.isSuccessful) {
-                    // Defensive null check in case API returns no body
                     val dtoList = response.body()?.restaurants
                         ?: throw Exception("Unexpected null response body")
 
@@ -63,7 +58,6 @@ class RestaurantRepositoryImpl @Inject constructor(
                     dtoList.map { mapper.mapToDomainModel(it) }
 
                 } else {
-                    // Log and throw descriptive error for HTTP failures
                     logger.error(
                         "RestaurantRepository",
                         "API error ${response.code()}: ${response.message()}"
@@ -72,21 +66,18 @@ class RestaurantRepositoryImpl @Inject constructor(
                 }
 
             } catch (e: SocketTimeoutException) {
-                // Specific case for server unavailability
                 logger.error("RestaurantRepository", "Timeout error: ${e.localizedMessage}")
                 throw SocketTimeoutException("Server timeout")
 
             } catch (e: IOException) {
-                // Handles general network issues (e.g., airplane mode)
                 if (e.message?.contains("API error") == false) {
                     logger.error("RestaurantRepository", "Network error: ${e.localizedMessage}")
                     throw IOException("No internet connection")
                 } else {
-                    throw e // Allow higher layers to handle API-specific codes
+                    throw e
                 }
 
             } catch (e: Exception) {
-                // Fallback for unexpected internal or parsing errors
                 logger.error("RestaurantRepository", "Unexpected error: ${e.localizedMessage}")
                 throw Exception("Something went wrong")
             }

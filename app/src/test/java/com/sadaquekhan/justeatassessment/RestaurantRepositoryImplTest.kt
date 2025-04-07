@@ -42,7 +42,7 @@ class RestaurantRepositoryImplTest {
                             name = "Burger Joint",
                             cuisines = listOf(CuisineDto("American")),
                             rating = RatingDto(4.0),
-                            address = AddressDto("1 High St", "London", "N1 9GU")
+                            address = AddressDto("1 High St", "London", "N19GU")
                         )
                     )
                 )
@@ -51,13 +51,13 @@ class RestaurantRepositoryImplTest {
 
         val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), FakeLogger())
 
-        val result = repo.getRestaurants("N1 9GU")
+        val result = repo.getRestaurants("N19GU") // Compact postcode (no spaces)
 
         assertThat(result).hasSize(1)
         assertThat(result[0].name).isEqualTo("Burger Joint")
 
-        // Confirm URL encoding was applied correctly (space -> %20)
-        assertThat(fakeApi.lastRequestedPostcode).isEqualTo("N1%209GU")
+        // Validate that raw compact postcode is sent to API without URL encoding
+        assertThat(fakeApi.lastRequestedPostcode).isEqualTo("N19GU")
     }
 
     /**
@@ -156,16 +156,17 @@ class RestaurantRepositoryImplTest {
     }
 
     /**
-     * Verifies that postcodes with spaces are encoded correctly using %20 (not +).
+     * Verifies that postcodes with spaces are now pre-sanitized by the ViewModel
+     * and passed to the Repository in compact format (no %20 encoding).
      */
     @Test
-    fun `WHEN postcode has space THEN ensure it is URL encoded as %20`() = runTest {
+    fun `WHEN postcode has space THEN ensure compact format is passed to repository`() = runTest {
         val fakeApi = FakeApiService()
         val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), FakeLogger())
 
-        repo.getRestaurants("W1D 3QF")
+        repo.getRestaurants("W1D3QF") // Already sanitized in ViewModel
 
-        // Must be percent-encoded, not '+' (per URLEncoder default)
-        assertThat(fakeApi.lastRequestedPostcode).isEqualTo("W1D%203QF")
+        // Confirm no encoding needed – passed directly to endpoint
+        assertThat(fakeApi.lastRequestedPostcode).isEqualTo("W1D3QF")
     }
 }
