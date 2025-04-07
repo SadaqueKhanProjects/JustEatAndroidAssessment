@@ -3,6 +3,7 @@ package com.sadaquekhan.justeatassessment.ui.components
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -11,25 +12,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 
-/**
- * Composable search bar that allows the user to input a UK postcode.
- * Includes styling, validation UI, and a search button with callback.
- *
- * @param value Current text field value (postcode)
- * @param onValueChange Lambda triggered when the user types
- * @param onSearch Lambda triggered when the search button is clicked with the current postcode
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
     value: String,
     onValueChange: (String) -> Unit,
-    onSearch: (String) -> Unit // Changed to take a String parameter
+    onSearch: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(modifier = modifier.fillMaxWidth()) {
         TextField(
             value = value,
             onValueChange = onValueChange,
@@ -46,10 +40,16 @@ fun SearchBar(
                 .testTag("search_bar"),
             shape = RoundedCornerShape(14.dp),
             singleLine = true,
-            textStyle = LocalTextStyle.current.copy(color = Color.Black),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Search,
                 keyboardType = KeyboardType.Text
+            ),
+            keyboardActions = KeyboardActions(
+                onSearch = {
+                    if (value.isNotBlank()) {
+                        onSearch(value.trim())
+                    }
+                }
             ),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = Color.White,
@@ -61,11 +61,16 @@ fun SearchBar(
         Spacer(modifier = Modifier.height(12.dp))
 
         Button(
-            onClick = { onSearch(value) }, // Pass the current value to onSearch
+            onClick = {
+                if (value.isNotBlank()) {
+                    onSearch(value.trim())
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
                 .testTag("search_button"),
+            enabled = value.isNotBlank(),
             shape = RoundedCornerShape(12.dp)
         ) {
             Text(
@@ -76,3 +81,5 @@ fun SearchBar(
         }
     }
 }
+
+

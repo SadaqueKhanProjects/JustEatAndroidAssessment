@@ -1,124 +1,144 @@
 package com.sadaquekhan.justeatassessment
 
 import com.google.common.truth.Truth.assertThat
+import com.sadaquekhan.justeatassessment.data.dto.*
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepositoryImpl
-import com.sadaquekhan.justeatassessment.domain.model.Restaurant
-import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
-import com.sadaquekhan.justeatassessment.util.FakeLogger
-import com.sadaquekhan.justeatassessment.util.FakeRestaurantMapper
+import com.sadaquekhan.justeatassessment.util.*
 import kotlinx.coroutines.test.runTest
-import okhttp3.mockwebserver.MockResponse
-import okhttp3.mockwebserver.MockWebServer
-import org.junit.After
-import org.junit.Before
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Test
-import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.Response
 import java.io.IOException
-import java.net.HttpURLConnection
+import java.net.SocketTimeoutException
 
 /**
- * Unit tests for RestaurantRepositoryImpl using a MockWebServer and a FakeRestaurantMapper.
- * Injects FakeLogger to avoid android.util.Log crashes during JVM-based tests.
+ * Unit tests for RestaurantRepositoryImpl.
+ * Uses FakeApiService, FakeLogger, and FakeRestaurantMapper to isolate testing.
  */
 class RestaurantRepositoryImplTest {
 
-    private lateinit var mockWebServer: MockWebServer
-    private lateinit var apiService: RestaurantApiService
-    private lateinit var repository: RestaurantRepositoryImpl
-
-    // Logger used to bypass Android logging during test
-    private val fakeLogger = FakeLogger()
-
-    // Fake mapper avoids sanitization logic to make assertions more predictable
-    private val fakeMapper = FakeRestaurantMapper()
-
-    @Before
-    fun setup() {
-        // Start a mock server to simulate API responses
-        mockWebServer = MockWebServer()
-        mockWebServer.start()
-
-        // Set up Retrofit to point to the mock server
-        apiService = Retrofit.Builder()
-            .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(MoshiConverterFactory.create())
-            .build()
-            .create(RestaurantApiService::class.java)
-
-        // Inject mock dependencies into the repository
-        repository = RestaurantRepositoryImpl(
-            apiService = apiService,
-            mapper = fakeMapper,
-            logger = fakeLogger
-        )
-    }
-
-    @After
-    fun tearDown() {
-        // Shut down the mock server after each test
-        mockWebServer.shutdown()
-    }
-
     @Test
-    fun `GIVEN valid response WHEN getRestaurants THEN returns correct mapped data`() = runTest {
-        val mockJson = """
-            {
-              "restaurants": [
-                {
-                  "id": "123",
-                  "name": "Pizza House",
-                  "cuisines": [{"name": "Italian"}],
-                  "rating": {"starRating": 4.5},
-                  "address": {
-                    "firstLine": "1 Main Street",
-                    "city": "London",
-                    "postalCode": "EC1A1BB"
-                  }
-                }
-              ]
-            }
-        """.trimIndent()
-
-        // Enqueue mock successful response
-        mockWebServer.enqueue(
-            MockResponse()
-                .setResponseCode(HttpURLConnection.HTTP_OK)
-                .setBody(mockJson)
-        )
-
-        val result: List<Restaurant> = repository.getRestaurants("EC1A1BB")
-
-        // Assertions to validate mapping logic
-        assertThat(result).isNotEmpty()
-        assertThat(result[0].name).isEqualTo("Pizza House")
-        assertThat(result[0].rating).isEqualTo(4.5)
-        assertThat(result[0].address.postalCode).isEqualTo("EC1A 1BB")
-    }
-
-    @Test
-    fun `GIVEN server error WHEN getRestaurants THEN throws Exception`() = runTest {
-        // Simulate a server failure (HTTP 500)
-        mockWebServer.enqueue(MockResponse().setResponseCode(500))
-
-        try {
-            repository.getRestaurants("EC1A1BB")
-            assert(false) { "Expected exception but none thrown" }
-        } catch (e: Exception) {
-            assertThat(e).isInstanceOf(Exception::class.java)
+    fun `WHEN API call is successful THEN returns mapped restaurants`() = runTest {
+        // Arrange: mock successful API response
+        val fakeApi = FakeApiService().apply {
+            mockResponse = Response.success(
+                RestaurantResponseDto(
+                    listOf(
+                        RestaurantDto(
+                            id = "1",
+                            name = "Burger Joint",
+                            cuisines = listOf(CuisineDto("American")),
+                            rating = RatingDto(4.0),
+                            address = AddressDto("1 High St", "London", "N1 9GU")
+                        )
+                    )
+                )
+            )
         }
+        val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), FakeLogger())
+
+        // Act
+        val result = repo.getRestaurants("N1 9GU")
+
+        // Assert
+        assertThat(result).hasSize(1)
+        assertThat(result[0].name).isEqualTo("Burger Joint")
+        assertThat(fakeApi.lastRequestedPostcode).isEqualTo("N1%209GU") // %20 encoding for space
     }
 
     @Test
-    fun `GIVEN no internet WHEN getRestaurants THEN throws IOException`() = runTest {
-        // Simulate no internet by stopping the server
-        mockWebServer.shutdown()
+    fun `WHEN API returns 404 THEN throws IOException with proper message`() = runTest {
+        // Arrange: mock 404 error response
+        val fakeApi = FakeApiService().apply {
+            mockResponse = Response.error(
+                404, "Not Found".toResponseBody("application/json".toMediaType())
+            )
+        }
+        val logger = FakeLogger()
+        val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
 
+        // Act & Assert
         try {
-            repository.getRestaurants("EC1A1BB")
-            assert(false) { "Expected IOException but none thrown" }
+            repo.getRestaurants("SW1A 1AA")
+            throw AssertionError("Expected IOException but got none")
         } catch (e: IOException) {
-            assertThat(e).isInstanceOf(IOException::class.java)
+            assertThat(e.message).contains("404")
+            val errors = logger.getLogs().filter { it.isError }
+            assertThat(errors).isNotEmpty()
+            assertThat(errors[0].message).contains("API error 404")
         }
+    }
+
+    @Test
+    fun `WHEN network is down THEN throws IOException with message`() = runTest {
+        // Arrange: simulate IOException (e.g., no internet)
+        val fakeApi = FakeApiService().apply {
+            shouldReturnError = true
+            errorToThrow = IOException("Network down")
+        }
+        val logger = FakeLogger()
+        val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
+
+        // Act & Assert
+        try {
+            repo.getRestaurants("E1 6AN")
+            throw AssertionError("Expected IOException due to network failure")
+        } catch (e: IOException) {
+            assertThat(e.message).contains("No internet connection")
+            assertThat(logger.getLogs().any { it.isError && "Network error" in it.message }).isTrue()
+        }
+    }
+
+    @Test
+    fun `WHEN timeout occurs THEN throws SocketTimeoutException`() = runTest {
+        // Arrange: simulate timeout
+        val fakeApi = FakeApiService().apply {
+            shouldReturnError = true
+            errorToThrow = SocketTimeoutException("Timeout")
+        }
+        val logger = FakeLogger()
+        val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
+
+        // Act & Assert
+        try {
+            repo.getRestaurants("W1A 0AX")
+            throw AssertionError("Expected SocketTimeoutException due to timeout")
+        } catch (e: SocketTimeoutException) {
+            assertThat(e.message).contains("timeout")
+            assertThat(logger.getLogs().any { it.isError && "Timeout" in it.message }).isTrue()
+        }
+    }
+
+    @Test
+    fun `WHEN API returns null THEN throws generic Exception`() = runTest {
+        // Arrange: simulate null body from API (malformed or empty)
+        val fakeApi = FakeApiService().apply {
+            mockResponse = Response.success(null)
+        }
+        val logger = FakeLogger()
+        val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
+
+        // Act & Assert
+        try {
+            repo.getRestaurants("EC2A 3AR")
+            throw AssertionError("Expected generic exception but got none")
+        } catch (e: Exception) {
+            assertThat(e.message).contains("Something went wrong")
+            assertThat(logger.getLogs().any { it.isError && "Unexpected error" in it.message }).isTrue()
+        }
+    }
+
+    @Test
+    fun `WHEN postcode has space THEN ensure it is URL encoded as %20`() = runTest {
+        // Arrange
+        val fakeApi = FakeApiService()
+        val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), FakeLogger())
+
+        // Act
+        repo.getRestaurants("W1D 3QF")
+
+        // Assert: space should be encoded as %20 not +
+        assertThat(fakeApi.lastRequestedPostcode).isEqualTo("W1D%203QF")
     }
 }

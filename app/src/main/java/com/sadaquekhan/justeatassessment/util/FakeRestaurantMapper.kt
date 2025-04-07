@@ -6,21 +6,29 @@ import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.domain.mapper.IRestaurantMapper
 
 /**
- * Fake implementation of RestaurantMapper for unit testing.
- * This bypasses the actual sanitization logic and returns predictable data.
+ * Fake implementation of [IRestaurantMapper] for unit testing.
+ * Features:
+ * - Bypasses real sanitization logic
+ * - Provides predictable outputs
+ * - Handles null ratings safely
+ * - Maintains consistent postcode formatting
+ *
+ * Usage: Inject this instead of real mapper to isolate tests from mapping logic
  */
 class FakeRestaurantMapper : IRestaurantMapper {
 
     /**
-     * Returns a simplified domain Restaurant object without applying cleanup.
-     * This isolates mapping logic during unit tests.
+     * Simplified mapping that:
+     * 1. Preserves all DTO values exactly (no sanitization)
+     * 2. Formats postcodes consistently
+     * 3. Safely handles null ratings (defaults to 0.0)
      */
     override fun mapToDomainModel(dto: RestaurantDto): Restaurant {
         return Restaurant(
             id = dto.id,
-            name = dto.name,
-            cuisines = dto.cuisines.map { it.name },
-            rating = dto.rating.starRating,
+            name = dto.name, // No name cleaning
+            cuisines = dto.cuisines?.map { it.name } ?: emptyList(), // Null-safe
+            rating = dto.rating?.starRating ?: 0.0, // Null-safe
             address = Address(
                 firstLine = dto.address.firstLine,
                 city = dto.address.city,
@@ -30,12 +38,15 @@ class FakeRestaurantMapper : IRestaurantMapper {
     }
 
     /**
-     * Formats UK postcode to standard format, e.g., "EC1A1BB" → "EC1A 1BB".
+     * Standardizes UK postcode format without validation.
+     * Example transforms:
+     * - "ec1a1bb" → "EC1A 1BB"
+     * - "N1 9GU" → "N1 9GU" (no change)
      */
-    private fun formatPostcode(postcode: String): String {
+    fun formatPostcode(postcode: String): String {
         return postcode
             .replace(Regex("\\s+"), "")
-            .replace(Regex("([A-Z]{1,2}[0-9][A-Z0-9]?)\\s*([0-9][A-Z]{2})"), "$1 $2")
-            .trim()
+            .uppercase()
+            .replace(Regex("([A-Z]{1,2}[0-9][A-Z0-9]?)([0-9][A-Z]{2})"), "$1 $2")
     }
 }

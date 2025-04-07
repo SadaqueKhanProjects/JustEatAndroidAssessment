@@ -3,15 +3,14 @@ package com.sadaquekhan.justeatassessment.data.dto
 import com.squareup.moshi.JsonClass
 
 /**
- * DTO representing the rating details of a restaurant.
+ * API rating representation.
  *
- * Parsed from the API and passed into domain models/UI for displaying customer satisfaction.
- *
- * @property starRating Average customer star rating (e.g., 4.5)
- *
- * @see RestaurantDto – uses this DTO to show restaurant ratings.
+ * @property starRating Nullable Double because:
+ *                     - Some restaurants may not have ratings
+ *                     - 0.0 is a valid poor rating
+ *                     - Missing in API = null
  */
 @JsonClass(generateAdapter = true)
 data class RatingDto(
-    val starRating: Double
+    val starRating: Double?
 )

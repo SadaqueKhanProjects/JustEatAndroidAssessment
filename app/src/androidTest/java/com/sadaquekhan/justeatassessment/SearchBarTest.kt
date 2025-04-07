@@ -1,10 +1,9 @@
 package com.sadaquekhan.justeatassessment
 
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
-import androidx.compose.ui.test.performTextInput
+import com.sadaquekhan.justeatassessment.domain.model.Address
+import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.ui.components.SearchBar
 import com.sadaquekhan.justeatassessment.ui.screen.RestaurantScreen
 import com.sadaquekhan.justeatassessment.util.FakeLogger
@@ -28,36 +27,144 @@ class SearchBarTest {
         fakeLogger = FakeLogger()
     }
 
-
-    
-    // --- Core Functionality Tests ---
+    // 1. Basic Functionality Tests
     @Test
-    fun searchBar_triggersViewModelLoad() {
+    fun searchBar_displaysCorrectInitialState() {
+        composeTestRule.setContent {
+            SearchBar(
+                value = "",
+                onValueChange = {},
+                onSearch = {}
+            )
+        }
+
+        // Verify the search bar exists and shows placeholder
+        composeTestRule.onNodeWithTag("search_bar")
+            .assertExists()
+
+        // Verify placeholder text is shown
+        composeTestRule.onNodeWithText("Enter UK postcode")
+            .assertExists()
+
+        // Verify the search button state
+        composeTestRule.onNodeWithTag("search_button")
+            .assertExists()
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun typingUpdatesSearchBarValue() {
+        var currentValue = ""
+        composeTestRule.setContent {
+            SearchBar(
+                value = currentValue,
+                onValueChange = { currentValue = it },
+                onSearch = {}
+            )
+        }
+
+        composeTestRule.onNodeWithTag("search_bar")
+            .performTextInput("SW1A")
+
+        assertEquals("SW1A", currentValue)
+    }
+
+    // 2. Search Trigger Tests
+    @Test
+    fun buttonClick_triggersSearchWithValidInput() {
+        var receivedValue = ""
         composeTestRule.setContent {
             SearchBar(
                 value = "SW1A1AA",
                 onValueChange = {},
-                onSearch = { postcode -> fakeViewModel.loadRestaurants(postcode) } // Updated to take postcode
+                onSearch = { receivedValue = it }
             )
         }
 
         composeTestRule.onNodeWithTag("search_button")
             .performClick()
 
-        assertTrue(fakeViewModel.uiState.value.hasSearched)
+        assertEquals("SW1A1AA", receivedValue)
     }
 
-    // --- State Propagation Tests ---
+
     @Test
-    fun loadingState_showsProgressIndicator() {
-        fakeViewModel.setLoadingState()
+    fun keyboardAction_doesNotTriggerWithEmptyInput() {
+        var searchTriggered = false
 
         composeTestRule.setContent {
             SearchBar(
-                value = "SW1A1AA",
+                value = "",
                 onValueChange = {},
-                onSearch = {} // This test doesn’t use onSearch, but should be updated if SearchBar displays state
+                onSearch = { searchTriggered = true }
             )
+        }
+
+        composeTestRule.onNodeWithTag("search_bar")
+            .performImeAction()
+
+        assertFalse(searchTriggered)
+    }
+
+    // 3. Input Validation Tests
+    @Test
+    fun emptyInput_disablesSearchButton() {
+        composeTestRule.setContent {
+            SearchBar(
+                value = "",
+                onValueChange = {},
+                onSearch = {}
+            )
+        }
+
+        composeTestRule.onNodeWithTag("search_button")
+            .assertIsNotEnabled()
+    }
+
+    @Test
+    fun whitespaceInput_trimsValueBeforeSearch() {
+        var receivedValue = ""
+        composeTestRule.setContent {
+            SearchBar(
+                value = "  SW1A 1AA  ",
+                onValueChange = {},
+                onSearch = { receivedValue = it }
+            )
+        }
+
+        composeTestRule.onNodeWithTag("search_button")
+            .performClick()
+
+        assertEquals("SW1A 1AA", receivedValue)
+    }
+
+    // 4. Integration with ViewModel Tests
+    @Test
+    fun search_triggersViewModelLoad() {
+        composeTestRule.setContent {
+            SearchBar(
+                value = "W1J7NT",
+                onValueChange = {},
+                onSearch = { fakeViewModel.loadRestaurants(it) }
+            )
+        }
+
+        composeTestRule.onNodeWithTag("search_button")
+            .performClick()
+
+        composeTestRule.waitUntil(5000) {
+            fakeViewModel.uiState.value.hasSearched
+        }
+
+        assertTrue(fakeViewModel.uiState.value.hasSearched)
+    }
+
+    // 5. UI State Tests
+    @Test
+    fun loadingState_displaysIndicator() {
+        fakeViewModel.setLoadingState()
+        composeTestRule.setContent {
+            RestaurantScreen(viewModel = fakeViewModel)
         }
 
         composeTestRule.onNodeWithTag("loading_indicator")
@@ -65,16 +172,11 @@ class SearchBarTest {
     }
 
     @Test
-    fun errorState_showsMessage() {
-        val errorMsg = "Invalid postcode"
+    fun errorState_displaysMessage() {
+        val errorMsg = "Network error"
         fakeViewModel.setError(errorMsg)
-
         composeTestRule.setContent {
-            SearchBar(
-                value = "INVALID",
-                onValueChange = {},
-                onSearch = {} // This test doesn’t use onSearch, but should be updated if SearchBar displays state
-            )
+            RestaurantScreen(viewModel = fakeViewModel)
         }
 
         composeTestRule.onNodeWithText(errorMsg)
@@ -82,69 +184,80 @@ class SearchBarTest {
     }
 
     @Test
-    fun successState_showsRestaurants() {
-        fakeViewModel.setSuccessState()
+    fun successState_displaysRestaurants() {
+        val testRestaurants = listOf(
+            Restaurant(
+                id = "1",
+                name = "Test Place",
+                rating = 4.2,
+                cuisines = listOf("British"),
+                address = Address("1 Test Rd", "London", "SW1A1AA")
+            )
+        )
+        fakeViewModel.setSuccessState(testRestaurants)
 
         composeTestRule.setContent {
             RestaurantScreen(viewModel = fakeViewModel)
         }
 
-        composeTestRule.waitForIdle()
-
-        composeTestRule.onNodeWithText("Pizza Place")
-            .assertExists()
-        composeTestRule.onNodeWithText("Burger Joint")
+        composeTestRule.onNodeWithText("Test Place")
             .assertExists()
     }
 
-    // --- Input Validation Tests ---
+    // 6. Edge Cases
     @Test
-    fun invalidPostcode_logsError() {
-        composeTestRule.setContent {
-            SearchBar(
-                value = "INVALID!",
-                onValueChange = {},
-                onSearch = { fakeLogger.error("SearchBar", "Invalid postcode format") } // Updated to take String (unused here)
-            )
-        }
-
-        composeTestRule.onNodeWithTag("search_button")
-            .performClick()
-
-        // Verify error was logged (would check logs in real test)
-        assertTrue(true) // Placeholder - would use a log captor in practice
-    }
-
-    // --- Edge Cases ---
-    @Test
-    fun emptyPostcode_preventsSearch() {
-        composeTestRule.setContent {
-            SearchBar(
-                value = "",
-                onValueChange = {},
-                onSearch = { fail("Search should not trigger for empty input") } // Updated to take String (unused here)
-            )
-        }
-
-        composeTestRule.onNodeWithTag("search_button")
-            .performClick()
-    }
-
-    @Test
-    fun whitespacePostcode_getsTrimmed() {
+    fun veryLongInput_handlesCorrectly() {
         var receivedValue = ""
+        val longInput = "A".repeat(100)
 
         composeTestRule.setContent {
             SearchBar(
-                value = "  SW1A 1AA  ",
-                onValueChange = { receivedValue = it },
-                onSearch = { } // Updated to take String (unused here)
+                value = longInput,
+                onValueChange = {},
+                onSearch = { receivedValue = it }
+            )
+        }
+
+        composeTestRule.onNodeWithTag("search_button")
+            .performClick()
+
+        assertEquals(longInput, receivedValue)
+    }
+
+    @Test
+    fun specialCharacters_invalidInput() {
+        composeTestRule.setContent {
+            SearchBar(
+                value = "SW1@1AA",
+                onValueChange = {},
+                onSearch = { fakeViewModel.loadRestaurants(it) }
+            )
+        }
+
+        composeTestRule.onNodeWithTag("search_button")
+            .performClick()
+
+        composeTestRule.waitUntil(5000) {
+            fakeViewModel.uiState.value.errorMessage != null
+        }
+
+        assertNotNull(fakeViewModel.uiState.value.errorMessage)
+    }
+
+    @Test
+    fun keyboardAction_triggersSearchWithValidInput() {
+        var receivedValue = ""
+        composeTestRule.setContent {
+            SearchBar(
+                value = "SW1A1AA",
+                onValueChange = {},
+                onSearch = { receivedValue = it }
             )
         }
 
         composeTestRule.onNodeWithTag("search_bar")
-            .performTextInput("  SW1A 1AA  ")
+            .performImeAction()
 
-        assertEquals("SW1A 1AA", receivedValue.trim())
+        assertEquals("SW1A1AA", receivedValue)
     }
 }
