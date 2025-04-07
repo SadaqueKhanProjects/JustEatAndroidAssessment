@@ -1,13 +1,14 @@
 # JustEatAndroidAssessment
 
-An Android app built with Kotlin for the **Just Eat Takeaway.com Early Careers Mobile Engineering Program**.
+An Android application developed in **Kotlin** for the **Just Eat Takeaway.com Early Careers Mobile Engineering Program**.
 
-This project demonstrates:
+This project showcases:
 
 - MVVM architecture with StateFlow  
-- Jetpack Compose UI  
+- Jetpack Compose UI framework  
 - Modular, testable, and scalable codebase  
-- API-driven development using Retrofit & Moshi
+- API-driven design using Retrofit & Moshi  
+- Interface-based dependency injection and robust testing strategy
 
 ---
 
@@ -20,12 +21,12 @@ This project demonstrates:
 
 ## Overview
 
-This app fetches UK restaurant listings from the official Just Eat API based on a user-entered postcode. It displays only the first **10** restaurants, focusing on:
+This app retrieves restaurant data from the official Just Eat UK API based on a user-provided **UK postcode**. It displays **only the first 10** restaurants, each showing:
 
-- **Name**  
+- **Name** (cleaned)  
 - **Cuisines** (whitelist filtered)  
-- **Rating** (when available)  
-- **Address** (formatted to UK standards)
+- **Rating** (shown if available)  
+- **Address** (formatted for UK standards)
 
 ---
 
@@ -38,12 +39,13 @@ This app fetches UK restaurant listings from the official Just Eat API based on 
 ## Architecture
 
 | Layer         | Purpose                        | Tools Used                    |
-|---------------|---------------------------------|-------------------------------|
+|---------------|--------------------------------|-------------------------------|
 | UI            | Display & Interaction           | Jetpack Compose (Material3)   |
 | State         | UI State Management             | ViewModel + StateFlow         |
-| Repository    | Data Source Abstraction         | Kotlin + Hilt                 |
+| Repository    | Data Abstraction + Logic        | Kotlin + Hilt                 |
 | Network       | API Communication               | Retrofit + Moshi              |
-| Domain Model  | App-safe Mapped Data            | DTO → Mapper → Domain Model   |
+| Domain Model  | Clean mapped data               | DTO → Mapper → Domain Model   |
+| Testing       | Unit test coverage & mocks      | JUnit, Truth, Robolectric     |
 
 Related docs:
 
@@ -58,18 +60,19 @@ Related docs:
 
 | Category              | Tools / Frameworks              |
 |------------------------|---------------------------------|
-| Language              | Kotlin                          |
+| Language              | Kotlin (JDK 17)                 |
 | Build System          | Gradle (Kotlin DSL)             |
 | UI Toolkit            | Jetpack Compose                 |
 | Dependency Injection  | Hilt                            |
 | Networking            | Retrofit + Moshi                |
 | Async Ops             | Kotlin Coroutines               |
+| Testing               | JUnit, Truth, Mockito, Turbine  |
 | IDE                   | Android Studio Electric Eel+    |
-| Min SDK               | 24+                             |
+| Min SDK               | 24                              |
 
 ---
 
-## Setup
+## Setup Instructions
 
 ```bash
 git clone https://github.com/SadaqueKhanProjects/JustEatAndroidAssessment.git
@@ -78,49 +81,71 @@ cd JustEatAndroidAssessment
 
 Then:
 
-1. Open in Android Studio  
+1. Open the project in Android Studio  
 2. Let Gradle sync  
-3. Run on emulator or physical device (tested on Pixel 6 & Samsung S22 Ultra)
+3. Run on emulator or physical device (tested on Pixel 6 and Samsung S22 Ultra)
 
 ---
 
-## Assumptions and Future Improvements
+## Assumptions
 
-### Assumptions
+- **Cuisine Filtering**: A whitelist removes noisy/informal entries like "Unknown" or "Kitchen".
+- **Rating Handling**: Null ratings are shown as "Not rated yet" rather than defaulting to a numeric value.
+- **Name Cleanup**: Symbols, handles, and redundant dashes/parentheses are removed when distracting from the display.
+- **Address Format**: Constructed from `firstLine`, `city`, and `postalCode`, with standard UK formatting applied and de-duplicated city names where applicable.
 
-- Cuisines were filtered using a **whitelist** to avoid internal/kitchen labels and maintain clarity.
-- Restaurant names were **minimally cleaned** (e.g., trailing dashes removed) to preserve brand identity without over-sanitizing.
-- Ratings only shown if explicitly present — no default placeholder like `0` or `N/A` was assumed.
+---
 
-### Future Improvements
+## Future Improvements
 
-- **Smarter cuisine parsing** once schema or permissions allow deeper categorization.
-- **Brand-aware name cleaning** using NLP or external datasets.
-- **Enhanced error handling UI** (e.g., retry dialogs, clearer empty state feedback).
-- **Pagination/lazy loading** for broader browsing beyond 10 results.
-- **Extended test coverage** for edge cases, ViewModel logic, and repository behavior.
+- Support **pagination** for broader result coverage beyond the first 10 entries  
+- Add **dialog-based error handling** with retry/refresh actions  
+- Expand **unit and UI test coverage** for edge cases and input validation logic    
+- Improve **name parsing** using NLP or branded keyword datasets
 
 ---
 
 ## Key Implementation Details
 
-- **Cuisines**: Ambiguous/irrelevant labels were omitted. Examples retained: Pizza, Sushi, Indian, Halal.
-- **Rating**: Retrieved from `rating.starRating`. Shown only if available to avoid misleading users.
-- **Address**: Built from `firstLine`, `city`, and `postalCode`. Cleaned and title-cased for UK format.
-- **Restaurant Name**: Cleaned to remove UI-noise (symbols, trailing dashes), without harming branding.
+- **Postcode Encoding**: All postcodes are validated using regex and then encoded using `URLEncoder`, ensuring compatibility with the Just Eat API endpoint.
+- **Repository Logic**: The repository handles API communication, response validation, and maps raw DTOs into clean domain models using a dedicated mapper.
+- **Error Handling**: Differentiates between timeout, network issues, and unexpected API responses. Errors are logged and surfaced with tailored messages.
+- **Testing Strategy**:  
+  Comprehensive testing was applied across layers using fake dependencies and coroutine test tooling:  
+  - Unit tests: Core logic in the mapper, repository, and ViewModel (`RestaurantMapperTest.kt`, `RestaurantRepositoryImplTest.kt`, `RestaurantViewModelTest.kt`)  
+  - UI tests: Compose-based test for the `RestaurantScreen` with a fake ViewModel to simulate screen states and verify components like `SearchBar` and `RestaurantItem` respond correctly.  
+  While not full integration tests, this ensured end-to-end behavior from ViewModel to UI was validated under realistic scenarios.
 
 ---
 
 ## Device Compatibility
 
-- ✅ Pixel 6 Emulator (API 34)  
-- ✅ Samsung S22 Ultra (API 14)  
+- Pixel 6 Emulator (API 34)  
+- Samsung S22 Ultra (API 34)  
 
-Renders reliably across screen sizes. Minor layout shifts may occur from font scaling.
+Renders cleanly across modern screen sizes and densities. Font scaling is supported with minimal shift.
+
+---
+
+## Assessment Criteria Mapping
+
+| Requirement                           | Implementation Status           |
+|--------------------------------------|----------------------------------|
+| Name                                 | ✅ Displayed, cleaned            |
+| Cuisines                             | ✅ Whitelist-filtered            |
+| Rating (as number)                   | ✅ Conditionally shown if present |
+| Address                              | ✅ Merged and cleaned properly   |
+| Kotlin usage                         | ✅ Fully written in Kotlin       |
+| Git usage visible                    | ✅ Maintained commit history     |
+| Build/run instructions               | ✅ Included in setup section     |
+| Assumptions & improvements noted     | ✅ Included in dedicated sections |
+| API: `GET /bypostcode/{postcode}`    | ✅ Integrated and tested         |
+| Testing                              | ✅ Unit tested core components   |
 
 ---
 
 ## License
 
-This project was built exclusively for the Just Eat Android Assessment.  
-Not intended for production use or public distribution.
+This application was developed solely for the **Just Eat Takeaway Android Coding Assessment**.  
+It is not intended for commercial deployment or distribution.
+```
