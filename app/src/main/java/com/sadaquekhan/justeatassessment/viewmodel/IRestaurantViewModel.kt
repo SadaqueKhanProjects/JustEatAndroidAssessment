@@ -3,13 +3,21 @@ package com.sadaquekhan.justeatassessment.viewmodel
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * IRestaurantViewModel is an interface defining the contract for a Restaurant ViewModel.
- * It exposes the UI state and a method to load restaurants based on a postcode.
+ * Contract for a ViewModel that powers the RestaurantScreen UI.
+ *
+ * Exposes UI state and allows triggering data fetch by postcode.
  */
 interface IRestaurantViewModel {
-    // Exposes the current UI state of the screen
+
+    /**
+     * The current state of the restaurant UI (loading, data, error, etc.)
+     */
     val uiState: StateFlow<RestaurantUiState>
 
-    // Loads the restaurant data based on the given postcode
+    /**
+     * Triggers a restaurant search based on the user-entered postcode.
+     *
+     * @param postcode Raw UK postcode string entered by the user
+     */
     fun loadRestaurants(postcode: String)
 }

@@ -7,7 +7,17 @@ import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.data.remote.dto.mapper.RestaurantMapper
 import org.junit.Test
 
+/**
+ * Unit tests for [RestaurantMapper].
+ *
+ * Validates key transformation rules between [RestaurantDto] and [Restaurant] domain model:
+ * - Sanitization of names and addresses
+ * - Cuisine filtering
+ * - Rating handling
+ * - Postcode formatting
+ */
 class RestaurantMapperTest {
+
     private val mapper = RestaurantMapper()
 
     @Test
@@ -44,6 +54,8 @@ class RestaurantMapperTest {
         )
 
         val result = mapper.mapToDomainModel(dto)
+
+        // Rating should remain null if not provided
         assertThat(result.rating).isNull()
     }
 
@@ -58,6 +70,8 @@ class RestaurantMapperTest {
         )
 
         val result = mapper.mapToDomainModel(dto)
+
+        // @handle and parentheses should be stripped
         assertThat(result.name).isEqualTo("PizzaSlice")
     }
 
@@ -72,6 +86,7 @@ class RestaurantMapperTest {
         )
 
         val result = mapper.mapToDomainModel(dto)
+
         assertThat(result.cuisines).containsExactly("Italian")
     }
 
@@ -86,6 +101,8 @@ class RestaurantMapperTest {
         )
 
         val result = mapper.mapToDomainModel(dto)
+
+        // "London" should not appear twice in the address
         assertThat(result.address.firstLine).isEqualTo("123 Road")
     }
 
@@ -108,6 +125,7 @@ class RestaurantMapperTest {
             )
 
             val result = mapper.mapToDomainModel(dto)
+
             assertThat(result.address.postalCode).isEqualTo(expected)
         }
     }

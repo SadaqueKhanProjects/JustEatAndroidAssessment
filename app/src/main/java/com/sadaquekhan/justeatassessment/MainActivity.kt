@@ -8,22 +8,26 @@ import com.sadaquekhan.justeatassessment.ui.theme.JustEatAndroidAssessmentTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * MainActivity is the entry point of the app.
- * It is an Hilt-injected activity that sets up the content view using Jetpack Compose.
+ * The main entry point of the app.
+ *
+ * Annotated with [@AndroidEntryPoint] to allow Hilt injection into this activity.
+ * Sets up the UI using Jetpack Compose and renders [RestaurantScreen].
  */
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     /**
-     * onCreate is called when the activity is created.
-     * It sets the content of the activity using Jetpack Compose.
+     * Initializes the UI content using Jetpack Compose and sets the root Composable.
+     *
+     * This ensures:
+     * - Hilt dependencies are injected before content is rendered
+     * - Theme is applied across the app
+     * - [RestaurantScreen] is shown as the default screen
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Applying the theme to the app
             JustEatAndroidAssessmentTheme {
-                // Set the RestaurantScreen composable as the UI
                 RestaurantScreen()
             }
         }
