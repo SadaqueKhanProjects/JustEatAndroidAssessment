@@ -1,3 +1,9 @@
+/**
+ * Instrumentation tests for the RestaurantItem Composable.
+ *
+ * Verifies that restaurant information is displayed correctly and handles edge cases
+ * like missing optional fields.
+ */
 package com.sadaquekhan.justeatassessment
 
 import androidx.compose.ui.test.assertTextEquals
@@ -11,9 +17,11 @@ import org.junit.Test
 
 class RestaurantItemTest {
 
+    // Compose test rule that provides a host for composable testing
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // Test restaurant data used across multiple test cases
     private val testRestaurant = Restaurant(
         id = "test_123",
         name = "Test Restaurant",
@@ -26,6 +34,13 @@ class RestaurantItemTest {
         )
     )
 
+    /**
+     * Verifies that all restaurant information is displayed correctly:
+     * - Name
+     * - Rating (formatted)
+     * - Cuisines (joined)
+     * - Address (formatted)
+     */
     @Test
     fun displaysAllRestaurantInformation() {
         composeTestRule.setContent {
@@ -57,6 +72,11 @@ class RestaurantItemTest {
             .assertTextEquals("Address: 123 Test Street, London, SW1A 1AA")
     }
 
+    /**
+     * Verifies behavior when optional fields are missing:
+     * - Empty cuisines list should hide cuisines section
+     * - Empty address line should be omitted from display
+     */
     @Test
     fun handlesMissingOptionalFields() {
         val minimalRestaurant = testRestaurant.copy(
@@ -68,7 +88,7 @@ class RestaurantItemTest {
             RestaurantItem(restaurant = minimalRestaurant)
         }
 
-        // Cuisines should not appear
+        // Cuisines should not appear when empty
         composeTestRule.onNodeWithTag("restaurant_cuisines_test_123")
             .assertDoesNotExist()
 

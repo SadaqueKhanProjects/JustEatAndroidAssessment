@@ -1,7 +1,17 @@
+<!--
+    Manifest file for test configuration in the Just Eat Assessment app.
+
+    This declares the FakeActivity as the main launcher activity for testing purposes,
+    replacing the actual main activity during instrumentation tests.
+-->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sadaquekhan.justeatassessment">
 
     <application>
+        <!--
+            FakeActivity used as test host for UI components.
+            Marked as exported and launcher activity for test instrumentation.
+        -->
         <activity
             android:name=".FakeActivity"
             android:exported="true"

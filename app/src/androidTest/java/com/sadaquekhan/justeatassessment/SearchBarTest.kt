@@ -1,3 +1,13 @@
+/**
+ * Comprehensive tests for the SearchBar Composable.
+ *
+ * Covers all aspects of search bar functionality:
+ * - Initial state and basic interaction
+ * - Search triggering mechanisms
+ * - Input validation and formatting
+ * - Integration with ViewModel
+ * - Edge case handling
+ */
 package com.sadaquekhan.justeatassessment
 
 import androidx.compose.ui.test.*
@@ -15,19 +25,33 @@ import org.junit.Test
 
 class SearchBarTest {
 
+    // Compose test rule that provides a host for composable testing
     @get:Rule
     val composeTestRule = createComposeRule()
 
+    // Test dependencies initialized before each test
     private lateinit var fakeViewModel: FakeRestaurantViewModel
     private lateinit var fakeLogger: FakeLogger
 
+    /**
+     * Initializes test dependencies before each test case.
+     * Ensures clean state for every test.
+     */
     @Before
     fun setup() {
         fakeViewModel = FakeRestaurantViewModel()
         fakeLogger = FakeLogger()
     }
 
-    // 1. Basic Functionality Tests
+    /* --------------------------
+     * 1. Basic Functionality Tests
+     * -------------------------- */
+
+    /**
+     * Verifies the initial state of the search bar:
+     * - Search bar exists with correct placeholder
+     * - Search button is disabled when empty
+     */
     @Test
     fun searchBar_displaysCorrectInitialState() {
         composeTestRule.setContent {
@@ -38,20 +62,20 @@ class SearchBarTest {
             )
         }
 
-        // Verify the search bar exists and shows placeholder
         composeTestRule.onNodeWithTag("search_bar")
             .assertExists()
 
-        // Verify placeholder text is shown
         composeTestRule.onNodeWithText("Enter UK postcode")
             .assertExists()
 
-        // Verify the search button state
         composeTestRule.onNodeWithTag("search_button")
             .assertExists()
             .assertIsNotEnabled()
     }
 
+    /**
+     * Verifies that text input updates the search bar value.
+     */
     @Test
     fun typingUpdatesSearchBarValue() {
         var currentValue = ""
@@ -69,7 +93,14 @@ class SearchBarTest {
         assertEquals("SW1A", currentValue)
     }
 
-    // 2. Search Trigger Tests
+    /* ----------------------
+     * 2. Search Trigger Tests
+     * ---------------------- */
+
+    /**
+     * Verifies that clicking the search button triggers
+     * the search callback with the current input value.
+     */
     @Test
     fun buttonClick_triggersSearchWithValidInput() {
         var receivedValue = ""
@@ -87,7 +118,10 @@ class SearchBarTest {
         assertEquals("SW1A1AA", receivedValue)
     }
 
-
+    /**
+     * Verifies that IME (keyboard) action doesn't trigger search
+     * when input is empty.
+     */
     @Test
     fun keyboardAction_doesNotTriggerWithEmptyInput() {
         var searchTriggered = false
@@ -106,7 +140,13 @@ class SearchBarTest {
         assertFalse(searchTriggered)
     }
 
-    // 3. Input Validation Tests
+    /* ----------------------------
+     * 3. Input Validation Tests
+     * ---------------------------- */
+
+    /**
+     * Verifies that empty input keeps the search button disabled.
+     */
     @Test
     fun emptyInput_disablesSearchButton() {
         composeTestRule.setContent {
@@ -121,6 +161,10 @@ class SearchBarTest {
             .assertIsNotEnabled()
     }
 
+    /**
+     * Verifies that whitespace in input is trimmed before
+     * being passed to the search callback.
+     */
     @Test
     fun whitespaceInput_trimsValueBeforeSearch() {
         var receivedValue = ""
@@ -138,7 +182,14 @@ class SearchBarTest {
         assertEquals("SW1A 1AA", receivedValue)
     }
 
-    // 4. Integration with ViewModel Tests
+    /* -----------------------------------
+     * 4. Integration with ViewModel Tests
+     * ----------------------------------- */
+
+    /**
+     * Verifies that search triggers the ViewModel's restaurant loading
+     * and updates the UI state accordingly.
+     */
     @Test
     fun search_triggersViewModelLoad() {
         composeTestRule.setContent {
@@ -152,6 +203,7 @@ class SearchBarTest {
         composeTestRule.onNodeWithTag("search_button")
             .performClick()
 
+        // Wait for async operation to complete
         composeTestRule.waitUntil(5000) {
             fakeViewModel.uiState.value.hasSearched
         }
@@ -159,7 +211,13 @@ class SearchBarTest {
         assertTrue(fakeViewModel.uiState.value.hasSearched)
     }
 
-    // 5. UI State Tests
+    /* -------------------
+     * 5. UI State Tests
+     * ------------------- */
+
+    /**
+     * Verifies that loading state displays the progress indicator.
+     */
     @Test
     fun loadingState_displaysIndicator() {
         fakeViewModel.setLoadingState()
@@ -171,6 +229,9 @@ class SearchBarTest {
             .assertExists()
     }
 
+    /**
+     * Verifies that error state displays the error message.
+     */
     @Test
     fun errorState_displaysMessage() {
         val errorMsg = "Network error"
@@ -183,6 +244,9 @@ class SearchBarTest {
             .assertExists()
     }
 
+    /**
+     * Verifies that success state displays the list of restaurants.
+     */
     @Test
     fun successState_displaysRestaurants() {
         val testRestaurants = listOf(
@@ -204,7 +268,14 @@ class SearchBarTest {
             .assertExists()
     }
 
-    // 6. Edge Cases
+    /* -------------------
+     * 6. Edge Cases
+     * ------------------- */
+
+    /**
+     * Verifies that very long input is handled correctly
+     * without truncation or errors.
+     */
     @Test
     fun veryLongInput_handlesCorrectly() {
         var receivedValue = ""
@@ -224,6 +295,10 @@ class SearchBarTest {
         assertEquals(longInput, receivedValue)
     }
 
+    /**
+     * Verifies that invalid input (special characters)
+     * results in an error state.
+     */
     @Test
     fun specialCharacters_invalidInput() {
         composeTestRule.setContent {
@@ -244,6 +319,10 @@ class SearchBarTest {
         assertNotNull(fakeViewModel.uiState.value.errorMessage)
     }
 
+    /**
+     * Verifies that IME (keyboard) action triggers search
+     * when input is valid.
+     */
     @Test
     fun keyboardAction_triggersSearchWithValidInput() {
         var receivedValue = ""
