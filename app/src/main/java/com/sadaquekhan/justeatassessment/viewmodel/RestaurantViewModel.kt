@@ -90,4 +90,32 @@ class RestaurantViewModel @Inject constructor(
             }
         }
     }
+<<<<<<< Updated upstream
 }
+=======
+
+    /**
+     * Centralized error handler that logs and updates the UI state.
+     *
+     * @param message User-facing error message
+     * @param e The exception that caused the failure
+     */
+    private fun handleError(message: String, e: Exception) {
+        logger.error("RestaurantViewModel", "${e.javaClass.simpleName}: ${e.message}")
+        _uiState.value = _uiState.value.copy(
+            isLoading = false,
+            errorMessage = message
+        )
+    }
+
+    /**
+     * Regex-based UK postcode format validation.
+     * Allows spaces, but strips them out for validation (e.g., "SW1A 1AA" becomes "SW1A1AA").
+     */
+    private fun isValidPostcode(postcode: String): Boolean {
+        // Remove spaces and validate with improved regex pattern
+        val sanitizedPostcode = postcode.replace("\\s".toRegex(), "")
+        return sanitizedPostcode.matches("^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}\$|^[A-Z]{1,2}[0-9]{1,2}\\s?[0-9]{1}[A-Z]{2}\$\n".toRegex())
+    }
+}
+>>>>>>> Stashed changes
