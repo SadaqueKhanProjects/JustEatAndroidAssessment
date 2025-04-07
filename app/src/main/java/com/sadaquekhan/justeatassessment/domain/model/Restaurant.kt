@@ -1,16 +1,17 @@
 package com.sadaquekhan.justeatassessment.domain.model
 
 /**
- * Domain model representing a fully sanitized restaurant ready for UI display.
+ * Domain model representing a sanitized restaurant entity.
+ * Used in UI and business logic layers.
  *
- * @property id Unique identifier for the restaurant
- * @property name Cleaned and formatted restaurant name
- * @property cuisines Filtered list of valid cuisine types
- * @property rating Nullable Double where:
- *                 - null = No rating available
- *                 - 0.0 = Actual zero-star rating
- *                 - >0.0 = Positive star rating
- * @property address Formatted and standardized address components
+ * @property id Unique restaurant identifier
+ * @property name Display-ready restaurant name
+ * @property cuisines Valid cuisine types (filtered)
+ * @property rating Nullable numeric rating:
+ *                  - null: no rating
+ *                  - 0.0: lowest possible
+ *                  - > 0.0: valid customer rating
+ * @property address Cleaned UK-style address object
  */
 data class Restaurant(
     val id: String,
@@ -20,9 +21,8 @@ data class Restaurant(
     val address: Address
 ) {
     /**
-     * Formats address components into a single readable string.
-     * Skips blank components and joins with commas.
-     * Example: "123 Main St, London, EC1A 1BB"
+     * Combines address components into one formatted string.
+     * Useful for display in UI (e.g., "45 Oxford St, London, W1D 2DZ")
      */
     val fullAddress: String
         get() = listOfNotNull(
@@ -33,10 +33,11 @@ data class Restaurant(
 }
 
 /**
- * Standardized address representation.
- * @property firstLine Street address (e.g., "123 Main St")
- * @property city City name (e.g., "London")
- * @property postalCode Formatted UK postcode (e.g., "EC1A 1BB")
+ * Represents a UK-style postal address for a restaurant.
+ *
+ * @property firstLine Street-level identifier (e.g., "Unit 4, Baker Street")
+ * @property city City of operation (e.g., "London")
+ * @property postalCode UK postcode formatted to standard (e.g., "W1U 6RS")
  */
 data class Address(
     val firstLine: String,
