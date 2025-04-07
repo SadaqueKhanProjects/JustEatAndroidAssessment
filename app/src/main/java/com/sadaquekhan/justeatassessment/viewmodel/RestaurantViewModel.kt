@@ -3,7 +3,6 @@ package com.sadaquekhan.justeatassessment.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sadaquekhan.justeatassessment.data.repository.IRestaurantRepository
-import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.util.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,89 +13,126 @@ import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 /**
- * ViewModel for the RestaurantScreen.
- * Handles:
- * - Triggering API calls via RestaurantRepository
- * - Managing and exposing UI state (RestaurantUiState)
- * - Handling error messages, loading, and empty states
+ * ViewModel responsible for managing restaurant data and screen state.
+ *
+ * Responsibilities:
+ * - Validates and transforms user postcode
+ * - Fetches restaurants from repository layer
+ * - Exposes [RestaurantUiState] to the UI via [StateFlow]
+ * - Handles loading, error, and empty result conditions
+ *
+ * @param repository Data source for fetching restaurants (injected via Hilt)
+ * @param logger Platform-safe logging abstraction
  */
 @HiltViewModel
 class RestaurantViewModel @Inject constructor(
     private val repository: IRestaurantRepository,
-    private val logger: Logger // Inject logger for platform-agnostic logging
-) : ViewModel() {
+    private val logger: Logger
+) : ViewModel(), IRestaurantViewModel {
 
     private val _uiState = MutableStateFlow(RestaurantUiState())
-    val uiState: StateFlow<RestaurantUiState> = _uiState
+    override val uiState: StateFlow<RestaurantUiState> = _uiState
 
-    private fun isValidPostcode(postcode: String): Boolean {
-        val trimmed = postcode.replace("\\s".toRegex(), "").uppercase()
-        return trimmed.length in 5..8 && trimmed.matches("^[A-Z0-9]+$".toRegex())
+    /**
+     * Represents possible outcomes of postcode validation.
+     */
+    sealed class ValidationResult {
+        object Empty : ValidationResult()
+        object InvalidFormat : ValidationResult()
+        data class Valid(val sanitizedPostcode: String) : ValidationResult()
     }
 
-    fun loadRestaurants(rawPostcode: String) {
-        val sanitized = rawPostcode.replace("\\s".toRegex(), "").uppercase()
+    /**
+     * Public entry point for postcode search, triggered by the UI.
+     * First validates the input, then initiates data loading.
+     *
+     * @param rawPostcode Unprocessed user input
+     */
+    override fun loadRestaurants(rawPostcode: String) {
+        when (val result = validatePostcode(rawPostcode)) {
+            is ValidationResult.Empty -> {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Please enter a postcode",
+                    hasSearched = true
+                )
+            }
 
-        if (!isValidPostcode(sanitized)) {
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                errorMessage = "Invalid UK postcode. Only 5–8 letters/numbers allowed.",
-                isEmpty = false,
-                hasSearched = true
-            )
-            return
+            is ValidationResult.InvalidFormat -> {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = "Invalid UK postcode format",
+                    hasSearched = true
+                )
+            }
+
+            is ValidationResult.Valid -> {
+                loadValidatedRestaurants(result.sanitizedPostcode)
+            }
         }
+    }
 
-        logger.debug("RestaurantViewModel", "Loading restaurants for postcode: $sanitized")
+    /**
+     * Validates a user-entered postcode and transforms it to API-compliant format.
+     * - Removes all spaces
+     * - Uppercases the input
+     * - Ensures it matches UK postcode regex
+     *
+     * @return A [ValidationResult] indicating whether input is usable
+     */
+    private fun validatePostcode(rawPostcode: String): ValidationResult {
+        if (rawPostcode.isBlank()) return ValidationResult.Empty
+
+        val sanitized = rawPostcode
+            .trim()
+            .replace("\\s+".toRegex(), "") // Remove all spacing for API compatibility
+            .uppercase()
+
+        return if (isValidPostcode(sanitized)) {
+            ValidationResult.Valid(sanitized)
+        } else {
+            ValidationResult.InvalidFormat
+        }
+    }
+
+
+    /**
+     * Performs the actual API call via repository and updates the UI state accordingly.
+     * Called only when postcode passes validation.
+     *
+     * @param sanitizedPostcode A cleaned, compact UK postcode (e.g., "EC4M7RF")
+     */
+    private fun loadValidatedRestaurants(sanitizedPostcode: String) {
+        logger.debug("RestaurantViewModel", "Loading restaurants for postcode: $sanitizedPostcode")
 
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(
                 isLoading = true,
                 errorMessage = null,
-                isEmpty = false,
                 hasSearched = true
             )
 
             try {
-                val restaurants: List<Restaurant> = repository.getRestaurants(sanitized)
+                val restaurants = repository.getRestaurants(sanitizedPostcode)
 
                 _uiState.value = _uiState.value.copy(
                     restaurants = restaurants,
                     isLoading = false,
-                    isEmpty = restaurants.isEmpty(),
-                    errorMessage = null
+                    isEmpty = restaurants.isEmpty()
                 )
+
             } catch (e: SocketTimeoutException) {
-                logger.error("RestaurantViewModel", "TimeoutException: ${e.localizedMessage}")
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Server timeout. Please try again shortly.",
-                    isEmpty = false
-                )
+                handleError("Server timeout. Please try again shortly.", e)
             } catch (e: IOException) {
-                logger.error("RestaurantViewModel", "IOException: ${e.localizedMessage}")
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "No internet connection. Please check your network.",
-                    isEmpty = false
-                )
+                handleError("No internet connection. Please check your network.", e)
             } catch (e: Exception) {
-                logger.error("RestaurantViewModel", "Unhandled error: ${e.localizedMessage}")
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Something went wrong. Please try again later.",
-                    isEmpty = false
-                )
+                handleError("Something went wrong. Please try again later.", e)
             }
         }
     }
-<<<<<<< Updated upstream
-}
-=======
 
     /**
      * Centralized error handler that logs and updates the UI state.
-     *
      * @param message User-facing error message
      * @param e The exception that caused the failure
      */
@@ -118,4 +154,3 @@ class RestaurantViewModel @Inject constructor(
         return sanitizedPostcode.matches("^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}\$|^[A-Z]{1,2}[0-9]{1,2}\\s?[0-9]{1}[A-Z]{2}\$\n".toRegex())
     }
 }
->>>>>>> Stashed changes

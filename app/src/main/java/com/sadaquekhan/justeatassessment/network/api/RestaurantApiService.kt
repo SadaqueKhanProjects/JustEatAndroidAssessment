@@ -6,15 +6,17 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 
 /**
- * Retrofit API interface that defines the endpoint to fetch restaurants by postcode.
+ * Retrofit service interface for the Just Eat API.
+ *
+ * Defines endpoint for retrieving restaurant data by UK postcode.
  */
 interface RestaurantApiService {
 
     /**
-     * Retrieves a list of enriched restaurant details from the Just Eat API.
+     * Fetches a list of enriched restaurant details for the given postcode.
      *
-     * @param postcode UK postcode to search restaurants by (URL-safe)
-     * @return A Retrofit Response wrapping RestaurantResponseDto
+     * @param postcode URL-encoded UK postcode (e.g., "EC4M 7RF")
+     * @return A [Response] wrapping [RestaurantResponseDto]
      */
     @GET("discovery/uk/restaurants/enriched/bypostcode/{postcode}")
     suspend fun getRestaurantsByPostcode(

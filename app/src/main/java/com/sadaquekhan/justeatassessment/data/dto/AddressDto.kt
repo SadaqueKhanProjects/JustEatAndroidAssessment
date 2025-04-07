@@ -3,16 +3,14 @@ package com.sadaquekhan.justeatassessment.data.dto
 import com.squareup.moshi.JsonClass
 
 /**
- * DTO representing a restaurant's address as received from the Just Eat API.
+ * Data Transfer Object (DTO) representing the address of a restaurant.
  *
- * This data class contains granular address details and is used as a nested component
- * within the RestaurantDto model.
+ * This model is nested inside the restaurant object returned by the Just Eat API,
+ * and includes key address fields used for display and sanitation.
  *
- * @property firstLine Street or house/building name
- * @property city City where the restaurant is located
- * @property postalCode UK postal code of the restaurant
- *
- * @see RestaurantDto – uses this class as part of its full data representation.
+ * @property firstLine Street-level address or building identifier (e.g., "45 Oxford Street")
+ * @property city The city where the restaurant is located (e.g., "London")
+ * @property postalCode Standard UK postal code (e.g., "W1D 2DZ")
  */
 @JsonClass(generateAdapter = true)
 data class AddressDto(

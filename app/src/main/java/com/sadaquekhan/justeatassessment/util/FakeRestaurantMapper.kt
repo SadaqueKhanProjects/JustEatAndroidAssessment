@@ -6,21 +6,19 @@ import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.domain.mapper.IRestaurantMapper
 
 /**
- * Fake implementation of RestaurantMapper for unit testing.
- * This bypasses the actual sanitization logic and returns predictable data.
+ * Simplified [IRestaurantMapper] for unit testing.
+ *
+ * Bypasses sanitization logic and provides predictable output for test validation.
  */
 class FakeRestaurantMapper : IRestaurantMapper {
 
-    /**
-     * Returns a simplified domain Restaurant object without applying cleanup.
-     * This isolates mapping logic during unit tests.
-     */
     override fun mapToDomainModel(dto: RestaurantDto): Restaurant {
         return Restaurant(
             id = dto.id,
-            name = dto.name,
+            name = dto.name, // No name cleaning or sanitation
             cuisines = dto.cuisines.map { it.name },
-            rating = dto.rating.starRating,
+            rating = dto.rating?.starRating
+                ?: 0.0, // Null ratings default to 0.0 for test stability
             address = Address(
                 firstLine = dto.address.firstLine,
                 city = dto.address.city,
@@ -30,12 +28,13 @@ class FakeRestaurantMapper : IRestaurantMapper {
     }
 
     /**
-     * Formats UK postcode to standard format, e.g., "EC1A1BB" → "EC1A 1BB".
+     * Normalizes UK postcode format.
+     * - e.g., "ec1a1bb" → "EC1A 1BB"
      */
-    private fun formatPostcode(postcode: String): String {
+    fun formatPostcode(postcode: String): String {
         return postcode
             .replace(Regex("\\s+"), "")
-            .replace(Regex("([A-Z]{1,2}[0-9][A-Z0-9]?)\\s*([0-9][A-Z]{2})"), "$1 $2")
-            .trim()
+            .uppercase()
+            .replace(Regex("([A-Z]{1,2}[0-9][A-Z0-9]?)([0-9][A-Z]{2})"), "$1 $2")
     }
 }
