@@ -15,6 +15,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+/**
+ * SearchBar for entering and submitting a UK postcode.
+ *
+ * UI behavior:
+ * - Accepts keyboard "Search" action or button tap
+ * - Disables button when input is blank
+ *
+ * @param value Current input value
+ * @param onValueChange Callback for input change
+ * @param onSearch Invoked when user triggers search
+ * @param modifier Optional [Modifier] for styling and testing
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
@@ -47,7 +59,7 @@ fun SearchBar(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     if (value.isNotBlank()) {
-                        onSearch(value.trim())
+                        onSearch(value.trim()) // Trigger search on keyboard "Search"
                     }
                 }
             ),
@@ -63,7 +75,7 @@ fun SearchBar(
         Button(
             onClick = {
                 if (value.isNotBlank()) {
-                    onSearch(value.trim())
+                    onSearch(value.trim()) // Manual search trigger via button
                 }
             },
             modifier = Modifier
@@ -81,5 +93,3 @@ fun SearchBar(
         }
     }
 }
-
-

@@ -11,16 +11,16 @@ import androidx.compose.ui.unit.dp
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
 /**
- * Displays a single restaurant's information in a standardized format.
+ * Displays the visual layout for a single restaurant entry.
  *
- * @param restaurant The domain model containing sanitized restaurant data
- * @param modifier Compose modifier for layout adjustments
+ * This UI component renders key restaurant data such as:
+ * - Name
+ * - Rating (or placeholder if not rated)
+ * - Cuisine list (if available)
+ * - Formatted address
  *
- * Behavior:
- * - Always shows name
- * - Shows "Not rated yet" for null ratings (grayed out)
- * - Shows numeric rating for 0.0+ ratings
- * - Conditionally shows cuisines/address if available
+ * @param restaurant The domain model containing sanitized restaurant information
+ * @param modifier Optional [Modifier] for layout or testing
  */
 @Composable
 fun RestaurantItem(
@@ -33,7 +33,6 @@ fun RestaurantItem(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .testTag("restaurant_item_${restaurant.id}")
     ) {
-        // Required field - always visible
         Text(
             text = restaurant.name,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -42,7 +41,7 @@ fun RestaurantItem(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Rating display logic
+        // Display rating: show placeholder if not rated
         when (restaurant.rating) {
             null -> Text(
                 text = "Rating: Not rated yet",
@@ -57,7 +56,7 @@ fun RestaurantItem(
             )
         }
 
-        // Optional: Cuisine list
+        // Show cuisines only if available
         if (restaurant.cuisines.isNotEmpty()) {
             Text(
                 text = "Cuisines: ${restaurant.cuisines.joinToString(", ")}",
@@ -66,7 +65,7 @@ fun RestaurantItem(
             )
         }
 
-        // Optional: Address
+        // Show address only if valid and not blank
         if (restaurant.fullAddress.isNotBlank()) {
             Text(
                 text = "Address: ${restaurant.fullAddress}",

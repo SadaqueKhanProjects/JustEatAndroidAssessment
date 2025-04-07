@@ -16,13 +16,24 @@ import com.sadaquekhan.justeatassessment.ui.components.SearchBar
 import com.sadaquekhan.justeatassessment.viewmodel.IRestaurantViewModel
 import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
 
+/**
+ * Main screen that manages restaurant search, loading, and result display.
+ *
+ * Handles 4 UI states:
+ * - Error state → shows error message
+ * - Loading state → shows loading spinner
+ * - Empty result after search → shows "No restaurants found"
+ * - Success state → shows up to 10 restaurants
+ *
+ * @param viewModel The injected [IRestaurantViewModel] (default via Hilt)
+ */
 @Composable
 fun RestaurantScreen(
     viewModel: IRestaurantViewModel = hiltViewModel<RestaurantViewModel>()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var postcode by remember { mutableStateOf("") }
-    val visibleCount = 10
+    val visibleCount = 10 // Limit shown restaurants per spec
 
     Column(
         modifier = Modifier
@@ -39,19 +50,24 @@ fun RestaurantScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         when {
+            // Case 1: Error (e.g., timeout, network failure)
             !uiState.errorMessage.isNullOrBlank() -> {
                 Text(
                     text = uiState.errorMessage ?: "Something went wrong.",
-                    color = Color(0xFFB00020),
+                    color = Color(0xFFB00020), // Material error red
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.testTag("error_message")
                 )
             }
+
+            // Case 2: Still loading
             uiState.isLoading -> {
                 CircularProgressIndicator(
                     modifier = Modifier.testTag("loading_indicator")
                 )
             }
+
+            // Case 3: No restaurants found after valid search
             uiState.hasSearched && uiState.restaurants.isEmpty() -> {
                 Text(
                     text = "No restaurants found.",
@@ -59,6 +75,8 @@ fun RestaurantScreen(
                     modifier = Modifier.testTag("empty_message")
                 )
             }
+
+            // Case 4: Success → Display restaurant list
             else -> {
                 LazyColumn(
                     modifier = Modifier.testTag("restaurant_list")
