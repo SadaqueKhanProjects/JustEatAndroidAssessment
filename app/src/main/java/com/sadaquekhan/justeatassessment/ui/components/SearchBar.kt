@@ -42,7 +42,8 @@ fun SearchBar(
             placeholder = {
                 Text(
                     text = "Enter UK postcode",
-                    color = Color.Gray
+                    color = Color.DarkGray,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             },
             modifier = Modifier
@@ -63,8 +64,13 @@ fun SearchBar(
                     }
                 }
             ),
-            colors = TextFieldDefaults.textFieldColors(
-                containerColor = Color.White,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedTextColor = Color.Black,
+                unfocusedTextColor = Color.Black,
+                focusedPlaceholderColor = Color.DarkGray,
+                unfocusedPlaceholderColor = Color.DarkGray,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent
             )
