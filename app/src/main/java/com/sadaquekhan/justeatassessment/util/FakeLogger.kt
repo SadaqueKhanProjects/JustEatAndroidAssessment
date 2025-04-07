@@ -1,23 +1,36 @@
 package com.sadaquekhan.justeatassessment.util
 
 /**
- * Test-safe implementation of the Logger interface.
- * Prints to the console instead of relying on Android-specific logging.
- * Use this in JVM-based unit tests to avoid runtime exceptions.
+ * Fake logger for use in unit tests.
+ * Captures logs internally for assertions and inspection.
  */
 class FakeLogger : Logger {
 
-    /**
-     * Simulates debug-level logging by printing to standard output.
-     */
-    override fun debug(tag: String, message: String) {
-        println("DEBUG: [$tag] $message")
-    }
+    private val logs = mutableListOf<LogEntry>()
 
     /**
-     * Simulates error-level logging by printing to standard output.
+     * Represents a single log entry.
+     *
+     * @property tag Logging tag
+     * @property message Message content
+     * @property isError True if this was an error log
      */
-    override fun error(tag: String, message: String) {
-        println("ERROR: [$tag] $message")
+    data class LogEntry(
+        val tag: String,
+        val message: String,
+        val isError: Boolean
+    )
+
+    override fun debug(tag: String, message: String) {
+        logs.add(LogEntry(tag, message, isError = false))
     }
+
+    override fun error(tag: String, message: String) {
+        val formatted = if (message.isBlank()) "Unknown error" else message
+        logs.add(LogEntry(tag, formatted, isError = true))
+    }
+
+    fun getLogs(): List<LogEntry> = logs.toList()
+
+    fun clear() = logs.clear()
 }

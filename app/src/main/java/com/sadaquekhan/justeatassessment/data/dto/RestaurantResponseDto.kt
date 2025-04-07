@@ -5,13 +5,10 @@ import com.squareup.moshi.JsonClass
 /**
  * Root DTO for the Just Eat API response.
  *
- * This class wraps the top-level JSON response, which contains
- * a list of restaurant entries. It's used by Retrofit to deserialize
- * the full response payload.
+ * The response wraps a list of restaurant objects under the `restaurants` field.
+ * This DTO is used directly by Retrofit to deserialize the full payload.
  *
- * @property restaurants The list of restaurants returned for a given postcode search
- *
- * @see RestaurantDto – each item in the list represents one restaurant.
+ * @property restaurants List of raw [RestaurantDto] entries returned by the API
  */
 @JsonClass(generateAdapter = true)
 data class RestaurantResponseDto(

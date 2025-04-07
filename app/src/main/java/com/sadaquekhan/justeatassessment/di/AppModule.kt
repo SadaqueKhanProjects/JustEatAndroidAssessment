@@ -17,28 +17,25 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 /**
- * Hilt module responsible for binding implementations to interfaces.
- * This ensures that dependencies can be injected where needed
- * using clean architecture principles.
+ * Hilt module for binding interface contracts to concrete implementations.
+ *
+ * Ensures testability and loose coupling by injecting interfaces where possible.
  */
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class AppModule {
 
     /**
-     * Binds RestaurantRepositoryImpl to RestaurantRepository interface.
-     * Allows for flexibility and testability across the app.
+     * Binds [RestaurantRepositoryImpl] as the concrete implementation of [IRestaurantRepository].
      */
     @Binds
     abstract fun bindRestaurantRepository(
         impl: RestaurantRepositoryImpl
     ): IRestaurantRepository
 
-
-
     /**
-     * Binds RestaurantMapper to the IRestaurantMapper interface.
-     * Enables interface-based injection and mocking during testing.
+     * Binds [RestaurantMapper] to the [IRestaurantMapper] interface.
+     * Allows for mocking and test overrides.
      */
     @Binds
     abstract fun bindRestaurantMapper(
@@ -47,16 +44,20 @@ abstract class AppModule {
 }
 
 /**
- * Hilt module that provides external dependencies like Retrofit and Logger.
- * Singleton scope ensures one instance is shared across the app lifecycle.
+ * Provides third-party or external dependencies used across the app.
+ *
+ * Includes Retrofit setup and logging configuration.
  */
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
     /**
-     * Provides a configured Retrofit instance for network calls.
-     * Uses Moshi for JSON serialization and deserialization.
+     * Provides a configured Retrofit instance.
+     *
+     * Uses Moshi for JSON parsing and sets Just Eat's base URL.
+     *
+     * @return A singleton Retrofit client
      */
     @Provides
     @Singleton
@@ -68,8 +69,7 @@ object NetworkModule {
     }
 
     /**
-     * Provides an implementation of RestaurantApiService using Retrofit.
-     * Allows for type-safe API requests based on defined endpoints.
+     * Provides an instance of [RestaurantApiService] created via Retrofit.
      */
     @Provides
     @Singleton
@@ -78,8 +78,8 @@ object NetworkModule {
     }
 
     /**
-     * Provides an Android-specific logger implementation.
-     * Can be swapped out with a fake logger during tests using @TestInstallIn.
+     * Provides the default Android-based logger implementation.
+     * Swap this out in tests using `@TestInstallIn`.
      */
     @Provides
     @Singleton

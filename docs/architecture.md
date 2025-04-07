@@ -1,12 +1,15 @@
 # 🏗️ Architecture Overview
 
-This document outlines the architectural structure and key design principles of the **JustEatAndroidAssessment** project.
+This document outlines the architectural structure and key design principles of the **
+JustEatAndroidAssessment** project.
 
 ---
 
 ## 1. 📐 Project Goal
 
-To develop a **lightweight, modular Android application** using MVVM architecture, modern Android development standards, and a clear separation of concerns — to retrieve and display restaurant data from the Just Eat UK API based on user postcode input.
+To develop a **lightweight, modular Android application** using MVVM architecture, modern Android
+development standards, and a clear separation of concerns — to retrieve and display restaurant data
+from the Just Eat UK API based on user postcode input.
 
 ---
 
@@ -90,7 +93,8 @@ This codebase was designed with future extensibility in mind:
 - **Composable UI**: Easy to add filters, sorters, or new UI sections.
 - **Clean MVVM + Repository Separation**: Enables logic reuse across ViewModels or screens.
 - **DTO → Domain Mapping**: Supports future Room, Caching, or Paging integration.
-- **State Encapsulation**: Gracefully handles timeouts, no results, invalid input, or connection issues.
+- **State Encapsulation**: Gracefully handles timeouts, no results, invalid input, or connection
+  issues.
 
 ---
 

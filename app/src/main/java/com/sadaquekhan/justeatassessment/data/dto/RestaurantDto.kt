@@ -3,24 +3,23 @@ package com.sadaquekhan.justeatassessment.data.dto
 import com.squareup.moshi.JsonClass
 
 /**
- * DTO for a restaurant entry in Just Eat's UK API response.
+ * Primary DTO representing a restaurant entry in the API response.
  *
- * Contains nested DTOs for address, rating, and list of cuisines.
- * Parsed from the network and mapped to a domain model before UI usage.
+ * This model contains only the subset of fields required for the assignment:
+ * name, cuisines, rating, and address. It acts as a raw data model used in
+ * the data layer before conversion to domain models for display.
  *
- * @property id Unique restaurant identifier
- * @property name Name of the restaurant
- * @property cuisines List of cuisine types offered
- * @property rating Restaurant rating details
- * @property address Full address details of the restaurant
- *
- * @see RestaurantResponseDto – contains a list of this DTO.
+ * @property id Unique restaurant identifier (e.g., "10234")
+ * @property name Restaurant name as returned from the API (may require sanitation)
+ * @property cuisines List of cuisine types offered by the restaurant
+ * @property rating Nullable rating information containing the star rating
+ * @property address Nested object containing the restaurant’s full address
  */
 @JsonClass(generateAdapter = true)
 data class RestaurantDto(
     val id: String,
     val name: String,
     val cuisines: List<CuisineDto>,
-    val rating: RatingDto,
+    val rating: RatingDto?,
     val address: AddressDto
 )
