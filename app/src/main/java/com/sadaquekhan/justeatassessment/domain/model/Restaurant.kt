@@ -19,7 +19,8 @@ data class Restaurant(
     val name: String,
     val cuisines: List<String>,
     val rating: Double?,
-    val address: Address
+    val address: Address,
+    val logoUrl: String? = null
 ) {
     /**
      * Combines address components into one formatted string.

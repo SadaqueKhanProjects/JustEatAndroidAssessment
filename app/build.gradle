@@ -17,9 +17,8 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // Enables Hilt-based test runners
         testInstrumentationRunner "com.sadaquekhan.justeatassessment.HiltTestRunner"
-        testInstrumentationRunnerArguments clearPackageData: 'true' // Clear app state between runs
+        testInstrumentationRunnerArguments clearPackageData: 'true'
 
         vectorDrawables.useSupportLibrary = true
     }
@@ -30,16 +29,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            testCoverageEnabled true // Enable coverage collection in debug builds
+            testCoverageEnabled true
         }
     }
 
     buildFeatures {
-        compose true // Enable Jetpack Compose
+        compose true
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.5.10' // Compose compiler
+        kotlinCompilerExtensionVersion '1.5.10'
     }
 
     compileOptions {
@@ -57,9 +56,9 @@ android {
 
     testOptions {
         unitTests {
-            returnDefaultValues = true // Allow ViewModel/LiveData tests without observers
-            includeAndroidResources = true // Required by Robolectric
-            animationsDisabled = true // Disable animations during test runs
+            returnDefaultValues = true
+            includeAndroidResources = true
+            animationsDisabled = true
 
             all {
                 jacoco {
@@ -87,7 +86,7 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
 
-    // --- Network (Retrofit + OkHttp + Moshi) ---
+    // --- Network (Retrofit + Moshi + OkHttp) ---
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
@@ -108,6 +107,10 @@ dependencies {
     implementation 'androidx.compose.ui:ui-tooling-preview:1.5.0'
     debugImplementation 'androidx.compose.ui:ui-tooling:1.5.0'
     debugImplementation 'androidx.compose.ui:ui-test-manifest:1.5.0'
+
+    // --- Image Loading (Coil) ---
+    implementation("io.coil-kt:coil-compose:2.4.0") // AsyncImage with placeholder + error fallback
+//    implementation("io.coil-kt:coil-transformations:2.4.0") // Optional: rounded corners, blur, etc.
 
     // --- Unit Testing ---
     testImplementation 'junit:junit:4.13.2'
@@ -134,15 +137,15 @@ dependencies {
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.48'
 }
 
-// --- Kotlin Code Coverage (Kover Plugin Configuration) ---
+// --- Kotlin Code Coverage ---
 kover {
     htmlReport {
         enabled = true
-        reportsDir = layout.buildDirectory.dir("kover-report") // Output HTML to /build/kover-report
+        reportsDir = layout.buildDirectory.dir("kover-report")
     }
 
     xmlReport {
-        enabled = true // Used by CI tools
+        enabled = true
     }
 
     verify {
@@ -158,12 +161,9 @@ kover {
     filters {
         classes {
             excludes += listOf(
-                    // Exclude fakes, mocks, and auto-generated Compose classes
                     "com.sadaquekhan.justeatassessment.*.Fake*",
                     "com.sadaquekhan.justeatassessment.*.Test*",
                     "*LiveLiterals*",
-
-                    // Exclude DTOs and model-only classes with no logic
                     "com.sadaquekhan.justeatassessment.data.dto.*",
                     "com.sadaquekhan.justeatassessment.domain.model.*",
                     "com.sadaquekhan.justeatassessment.data.remote.dto.mapper.*"

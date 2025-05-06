@@ -21,5 +21,6 @@ data class RestaurantDto(
     val name: String,
     val cuisines: List<CuisineDto>,
     val rating: RatingDto?,
-    val address: AddressDto
+    val address: AddressDto,
+    val metadata: MetadataDto? = null
 )

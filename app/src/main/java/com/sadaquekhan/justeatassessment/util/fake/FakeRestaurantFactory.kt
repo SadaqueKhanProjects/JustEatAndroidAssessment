@@ -1,9 +1,6 @@
 package com.sadaquekhan.justeatassessment.util.fake
 
-import com.sadaquekhan.justeatassessment.data.dto.AddressDto
-import com.sadaquekhan.justeatassessment.data.dto.CuisineDto
-import com.sadaquekhan.justeatassessment.data.dto.RatingDto
-import com.sadaquekhan.justeatassessment.data.dto.RestaurantDto
+import com.sadaquekhan.justeatassessment.data.dto.*
 import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
@@ -20,18 +17,16 @@ object FakeRestaurantFactory {
         rating: Double? = 4.0,
         firstLine: String = "123 Fake St",
         city: String = "London",
-        postalCode: String = "SW1A1AA"
+        postalCode: String = "SW1A1AA",
+        logoUrl: String? = null // ✅ Add this
     ): Restaurant {
         return Restaurant(
             id = id,
             name = name,
             cuisines = cuisines,
             rating = rating,
-            address = Address(
-                firstLine = firstLine,
-                city = city,
-                postalCode = postalCode
-            )
+            address = Address(firstLine, city, postalCode),
+            logoUrl = logoUrl // ✅ Map it
         )
     }
 
@@ -42,7 +37,8 @@ object FakeRestaurantFactory {
         rating: Double? = 4.0,
         firstLine: String = "123 Fake St",
         city: String = "London",
-        postalCode: String = "SW1A1AA"
+        postalCode: String = "SW1A1AA",
+        logoUrl: String? = "https://cdn.test/logo.png"
     ): RestaurantDto {
         return RestaurantDto(
             id = id,
@@ -53,6 +49,9 @@ object FakeRestaurantFactory {
                 firstLine = firstLine,
                 city = city,
                 postalCode = postalCode
+            ),
+            metadata = MetadataDto(
+                logo = logoUrl?.let { LogoDto(it) }
             )
         )
     }

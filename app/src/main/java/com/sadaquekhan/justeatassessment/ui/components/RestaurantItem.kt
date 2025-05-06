@@ -5,22 +5,21 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.sadaquekhan.justeatassessment.R
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 
 /**
- * Displays the visual layout for a single restaurant entry.
+ * Displays a single restaurant item including logo, name, rating, cuisines, and address.
  *
- * This UI component renders key restaurant data such as:
- * - Name
- * - Rating (or placeholder if not rated)
- * - Cuisine list (if available)
- * - Formatted address
- *
- * @param restaurant The domain model containing sanitized restaurant information
- * @param modifier Optional [Modifier] for layout or testing
+ * This version uses a hardcoded image URL for testing.
  */
 @Composable
 fun RestaurantItem(
@@ -33,6 +32,18 @@ fun RestaurantItem(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .testTag("restaurant_item_${restaurant.id}")
     ) {
+        AsyncImage(
+            model = "https://images.unsplash.com/photo-1606788075761-0c02e5a93d30?auto=format&fit=crop&w=400&q=80",
+            contentDescription = "Direct load",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp)
+        )
+
+
+        Spacer(modifier = Modifier.height(8.dp))
+
         Text(
             text = restaurant.name,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
@@ -41,7 +52,6 @@ fun RestaurantItem(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Display rating: show placeholder if not rated
         when (restaurant.rating) {
             null -> Text(
                 text = "Rating: Not rated yet",
@@ -57,7 +67,6 @@ fun RestaurantItem(
             )
         }
 
-        // Show cuisines only if available
         if (restaurant.cuisines.isNotEmpty()) {
             Text(
                 text = "Cuisines: ${restaurant.cuisines.joinToString(", ")}",
@@ -66,7 +75,6 @@ fun RestaurantItem(
             )
         }
 
-        // Show address only if valid and not blank
         if (restaurant.fullAddress.isNotBlank()) {
             Text(
                 text = "Address: ${restaurant.fullAddress}",

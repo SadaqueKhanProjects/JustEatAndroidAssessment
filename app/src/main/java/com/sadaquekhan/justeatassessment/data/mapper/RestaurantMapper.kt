@@ -36,7 +36,8 @@ class RestaurantMapper @Inject constructor() : IRestaurantMapper {
             name = cleanRestaurantName(dto.name),
             cuisines = filterValidCuisines(dto),
             rating = dto.rating?.starRating,
-            address = sanitizedAddress
+            address = sanitizedAddress,
+            logoUrl = dto.metadata?.logo?.standard
         )
     }
 

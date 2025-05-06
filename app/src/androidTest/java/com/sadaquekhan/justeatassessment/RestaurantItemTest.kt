@@ -50,4 +50,18 @@ class RestaurantItemTest {
         composeTestRule.onNodeWithTag("restaurant_cuisines_test_123").assertDoesNotExist()
         composeTestRule.onNodeWithTag("restaurant_address_test_123").assertTextEquals("Address: London, SW1A 1AA")
     }
+
+    @Test
+    fun displaysLogoImageIfUrlPresent() {
+        val restaurantWithLogo = testRestaurant.copy(
+            logoUrl = "https://example.com/logo.png"
+        )
+
+        composeTestRule.setContent {
+            RestaurantItem(restaurant = restaurantWithLogo)
+        }
+
+        composeTestRule.onNodeWithTag("restaurant_logo_test_123").assertExists()
+    }
+
 }
