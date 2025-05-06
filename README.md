@@ -32,7 +32,7 @@ This app retrieves restaurant data from the official Just Eat UK API based on a 
 
 ## Demo
 
-<img src="docs/JustEatAppDemo_SamsungS22_v3.gif" alt="App Demo on Samsung S22 Ultra" width="300"/>
+<img src="docs/JustEatAppDemo_SamsungS22_v4.gif" alt="App Demo on Samsung S22 Ultra" width="300"/>
 
 ---
 
