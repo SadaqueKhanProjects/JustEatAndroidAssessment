@@ -10,6 +10,7 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
+
 /**
  * Default implementation of [IRestaurantRepository] responsible for:
  * - Fetching restaurants from the Just Eat API

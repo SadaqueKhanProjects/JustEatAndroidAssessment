@@ -10,8 +10,9 @@ import kotlinx.coroutines.delay
  *
  * Supports:
  * - Delay simulation
- * - Custom error types
- * - Tracking of last requested postcode
+ * - Exception throwing for error testing
+ * - Mocked return types via RestaurantResult
+ * - Postcode tracking
  */
 class FakeRestaurantRepository : IRestaurantRepository {
 
@@ -20,9 +21,18 @@ class FakeRestaurantRepository : IRestaurantRepository {
     var lastRequestedPostcode: String? = null
     var delayMillis: Long = 0L
 
+    // New error simulation flags
+    var shouldReturnError: Boolean = false
+    var errorToThrow: Throwable = Exception("Simulated error")
+
     override suspend fun getRestaurants(postcode: String): RestaurantResult {
         lastRequestedPostcode = postcode.trim().replace("\\s+".toRegex(), "").uppercase()
         delay(delayMillis)
+
+        // Throw error if flag is set
+        if (shouldReturnError) {
+            throw errorToThrow
+        }
 
         return when (returnType) {
             RestaurantResultType.SUCCESS -> RestaurantResult.Success(mockRestaurants)

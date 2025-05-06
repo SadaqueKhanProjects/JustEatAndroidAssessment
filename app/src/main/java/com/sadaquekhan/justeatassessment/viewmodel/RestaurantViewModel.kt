@@ -47,7 +47,7 @@ class RestaurantViewModel @Inject constructor(
                     setLoading()
 
                     when (val result = repository.getRestaurants(sanitizedPostcode)) {
-                        is RestaurantResult.Success -> setSuccess(result.data)
+                        is RestaurantResult.Success -> setSuccess(result.restaurants)
                         is RestaurantResult.NetworkError -> setError(result.message)
                         is RestaurantResult.Timeout -> setError(result.message)
                         is RestaurantResult.UnknownError -> setError(result.message)

@@ -1,10 +1,10 @@
 package com.sadaquekhan.justeatassessment
 
 import com.google.common.truth.Truth.assertThat
-import com.sadaquekhan.justeatassessment.data.dto.*
+import com.sadaquekhan.justeatassessment.data.remote.dto.mapper.RestaurantMapper
 import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
-import com.sadaquekhan.justeatassessment.data.remote.dto.mapper.RestaurantMapper
+import com.sadaquekhan.justeatassessment.util.fake.FakeRestaurantFactory
 import org.junit.Test
 
 /**
@@ -22,12 +22,14 @@ class RestaurantMapperTest {
 
     @Test
     fun `maps valid restaurant with all fields`() {
-        val dto = RestaurantDto(
+        val dto = FakeRestaurantFactory.makeDto(
             id = "1",
             name = "Pizza Place",
-            cuisines = listOf(CuisineDto("Italian")),
-            rating = RatingDto(4.5),
-            address = AddressDto("1 Road", "London", "ec1a1bb")
+            cuisines = listOf("Italian"),
+            rating = 4.5,
+            firstLine = "1 Road",
+            city = "London",
+            postalCode = "ec1a1bb"
         )
 
         val result = mapper.mapToDomainModel(dto)
@@ -45,44 +47,30 @@ class RestaurantMapperTest {
 
     @Test
     fun `handles null rating with default null`() {
-        val dto = RestaurantDto(
-            id = "1",
-            name = "Pizza Place",
-            cuisines = listOf(CuisineDto("Italian")),
-            rating = null,
-            address = AddressDto("1 Road", "London", "EC1A1BB")
+        val dto = FakeRestaurantFactory.makeDto(
+            rating = null
         )
 
         val result = mapper.mapToDomainModel(dto)
 
-        // Rating should remain null if not provided
         assertThat(result.rating).isNull()
     }
 
     @Test
     fun `WHEN name contains social handles THEN removes them`() {
-        val dto = RestaurantDto(
-            id = "1",
-            name = "PizzaSlice @Italian (London)",
-            cuisines = listOf(CuisineDto("Italian")),
-            rating = RatingDto(4.5),
-            address = AddressDto("1 Road", "London", "ec1a1bb")
+        val dto = FakeRestaurantFactory.makeDto(
+            name = "PizzaSlice @Italian (London)"
         )
 
         val result = mapper.mapToDomainModel(dto)
 
-        // @handle and parentheses should be stripped
         assertThat(result.name).isEqualTo("PizzaSlice")
     }
 
     @Test
     fun `WHEN cuisine not in whitelist THEN filters it out`() {
-        val dto = RestaurantDto(
-            id = "1",
-            name = "Test",
-            cuisines = listOf(CuisineDto("Italian"), CuisineDto("Unknown")),
-            rating = null,
-            address = AddressDto("1 Road", "London", "ec1a1bb")
+        val dto = FakeRestaurantFactory.makeDto(
+            cuisines = listOf("Italian", "Unknown")
         )
 
         val result = mapper.mapToDomainModel(dto)
@@ -92,17 +80,14 @@ class RestaurantMapperTest {
 
     @Test
     fun `WHEN address contains city in first line THEN removes duplicate`() {
-        val dto = RestaurantDto(
-            id = "1",
-            name = "Test",
-            cuisines = emptyList(),
-            rating = null,
-            address = AddressDto("123 London Road", "London", "ec1a1bb")
+        val dto = FakeRestaurantFactory.makeDto(
+            firstLine = "123 London Road",
+            city = "London",
+            postalCode = "ec1a1bb"
         )
 
         val result = mapper.mapToDomainModel(dto)
 
-        // "London" should not appear twice in the address
         assertThat(result.address.firstLine).isEqualTo("123 Road")
     }
 
@@ -116,12 +101,8 @@ class RestaurantMapperTest {
         )
 
         testCases.forEach { (input, expected) ->
-            val dto = RestaurantDto(
-                id = "1",
-                name = "Test",
-                cuisines = emptyList(),
-                rating = null,
-                address = AddressDto("1 Road", "London", input)
+            val dto = FakeRestaurantFactory.makeDto(
+                postalCode = input
             )
 
             val result = mapper.mapToDomainModel(dto)
