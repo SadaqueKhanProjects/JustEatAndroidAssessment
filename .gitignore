@@ -1,0 +1,24 @@
+# === Android Studio ===
+*.iml
+.idea/
+.gradle/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# === Local Configuration ===
+local.properties
+
+# === macOS System Files ===
+.DS_Store
+
+# === IDE-specific Files (Safe to ignore entirely) ===
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+.idea/vcs.xml  # added to ignore Git VCS config too
+.idea/misc.xml

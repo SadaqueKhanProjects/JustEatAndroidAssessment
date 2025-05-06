@@ -1,0 +1,22 @@
+pluginManagement {
+    plugins {
+        id 'com.google.dagger.hilt.android' version '2.48'
+    }
+    repositories {
+        google()
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+rootProject.name = "JustEatAndroidAssessment"
+include(":app")
