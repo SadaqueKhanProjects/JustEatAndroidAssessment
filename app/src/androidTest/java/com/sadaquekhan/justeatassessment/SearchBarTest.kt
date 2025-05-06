@@ -16,8 +16,8 @@ import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.ui.components.SearchBar
 import com.sadaquekhan.justeatassessment.ui.screen.RestaurantScreen
-import com.sadaquekhan.justeatassessment.util.FakeLogger
-import com.sadaquekhan.justeatassessment.util.FakeRestaurantViewModel
+import com.sadaquekhan.justeatassessment.util.fake.FakeLogger
+import com.sadaquekhan.justeatassessment.util.fake.FakeRestaurantViewModel
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule

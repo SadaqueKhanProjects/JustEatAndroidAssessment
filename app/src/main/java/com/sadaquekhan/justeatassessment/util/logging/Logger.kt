@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.util
+package com.sadaquekhan.justeatassessment.util.logging
 
 /**
  * Abstraction for logging to allow for platform-specific implementations (e.g., Android or test).

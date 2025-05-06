@@ -14,7 +14,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import com.sadaquekhan.justeatassessment.ui.screen.RestaurantScreen
-import com.sadaquekhan.justeatassessment.util.FakeRestaurantViewModel
+import com.sadaquekhan.justeatassessment.util.fake.FakeRestaurantViewModel
 import org.junit.Rule
 import org.junit.Test
 

@@ -1,10 +1,9 @@
 package com.sadaquekhan.justeatassessment.data.repository
 
 import com.sadaquekhan.justeatassessment.domain.mapper.IRestaurantMapper
-import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.domain.result.RestaurantResult
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
-import com.sadaquekhan.justeatassessment.util.Logger
+import com.sadaquekhan.justeatassessment.util.logging.Logger
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException

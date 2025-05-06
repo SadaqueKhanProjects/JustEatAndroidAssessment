@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.sadaquekhan.justeatassessment.data.repository.IRestaurantRepository
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.domain.result.RestaurantResult
-import com.sadaquekhan.justeatassessment.util.Logger
+import com.sadaquekhan.justeatassessment.util.logging.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

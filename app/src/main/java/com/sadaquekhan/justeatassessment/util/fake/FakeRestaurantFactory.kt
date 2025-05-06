@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.util
+package com.sadaquekhan.justeatassessment.util.fake
 
 import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant

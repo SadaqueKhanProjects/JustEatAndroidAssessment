@@ -3,8 +3,8 @@ package com.sadaquekhan.justeatassessment
 import com.google.common.truth.Truth.assertThat
 import com.sadaquekhan.justeatassessment.domain.model.Address
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
-import com.sadaquekhan.justeatassessment.util.FakeLogger
-import com.sadaquekhan.justeatassessment.util.FakeRestaurantRepository
+import com.sadaquekhan.justeatassessment.util.fake.FakeLogger
+import com.sadaquekhan.justeatassessment.util.fake.FakeRestaurantRepository
 import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +13,6 @@ import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.io.IOException
 import java.net.SocketTimeoutException
 
 /**

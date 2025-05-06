@@ -4,6 +4,9 @@ import com.google.common.truth.Truth.assertThat
 import com.sadaquekhan.justeatassessment.data.dto.*
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepositoryImpl
 import com.sadaquekhan.justeatassessment.util.*
+import com.sadaquekhan.justeatassessment.util.fake.FakeApiService
+import com.sadaquekhan.justeatassessment.util.fake.FakeLogger
+import com.sadaquekhan.justeatassessment.util.fake.FakeRestaurantMapper
 import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.ResponseBody.Companion.toResponseBody

@@ -5,8 +5,8 @@ import com.sadaquekhan.justeatassessment.data.repository.IRestaurantRepository
 import com.sadaquekhan.justeatassessment.data.repository.RestaurantRepositoryImpl
 import com.sadaquekhan.justeatassessment.domain.mapper.IRestaurantMapper
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService
-import com.sadaquekhan.justeatassessment.util.AndroidLogger
-import com.sadaquekhan.justeatassessment.util.Logger
+import com.sadaquekhan.justeatassessment.util.logging.AndroidLogger
+import com.sadaquekhan.justeatassessment.util.logging.Logger
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

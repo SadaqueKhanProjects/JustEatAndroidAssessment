@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.util
+package com.sadaquekhan.justeatassessment.util.fake
 
 import com.sadaquekhan.justeatassessment.data.dto.RestaurantResponseDto
 import com.sadaquekhan.justeatassessment.network.api.RestaurantApiService

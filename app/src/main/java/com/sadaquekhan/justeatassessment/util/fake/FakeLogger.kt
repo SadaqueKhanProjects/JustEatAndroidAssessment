@@ -1,4 +1,6 @@
-package com.sadaquekhan.justeatassessment.util
+package com.sadaquekhan.justeatassessment.util.fake
+
+import com.sadaquekhan.justeatassessment.util.logging.Logger
 
 /**
  * Fake logger for use in unit tests.

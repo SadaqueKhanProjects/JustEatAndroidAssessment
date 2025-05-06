@@ -1,4 +1,4 @@
-package com.sadaquekhan.justeatassessment.util
+package com.sadaquekhan.justeatassessment.util.logging
 
 import android.util.Log
 import javax.inject.Inject
