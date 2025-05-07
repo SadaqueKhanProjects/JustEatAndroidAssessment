@@ -20,6 +20,29 @@ class RestaurantMapperTest {
 
     private val mapper = RestaurantMapper()
 
+
+    @Test
+    fun `WHEN logo url is provided in metadata THEN it maps correctly to domain model`() {
+        val testLogoUrl = "https://justeat-assets.com/logos/test_logo.png"
+
+        val dto = FakeRestaurantFactory.makeDto(
+            id = "logo_test_id",
+            name = "Logo Test Restaurant",
+            cuisines = listOf("Pizza"),
+            rating = 4.2,
+            firstLine = "123 Logo St",
+            city = "London",
+            postalCode = "W1D 3QF",
+            logoUrl = testLogoUrl
+        )
+
+        val result = mapper.mapToDomainModel(dto)
+
+        assertThat(result.logoUrl).isEqualTo(testLogoUrl)
+        assertThat(result.id).isEqualTo("logo_test_id")
+        assertThat(result.name).contains("Logo Test")
+    }
+
     @Test
     fun `maps valid restaurant with all fields`() {
         val dto = FakeRestaurantFactory.makeDto(
@@ -44,6 +67,8 @@ class RestaurantMapperTest {
             )
         )
     }
+
+
 
     @Test
     fun `handles null rating with default null`() {

@@ -3,9 +3,9 @@ package com.sadaquekhan.justeatassessment.data.dto
 import com.squareup.moshi.JsonClass
 
 /**
- * DTO for logo image returned in metadata.
+ * DTO representing the logo object inside metadata.
  *
- * @property standard URL of the standard-sized logo
+ * @property standard Optional URL for the standard resolution logo
  */
 @JsonClass(generateAdapter = true)
 data class LogoDto(

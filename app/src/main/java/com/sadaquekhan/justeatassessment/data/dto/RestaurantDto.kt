@@ -5,15 +5,12 @@ import com.squareup.moshi.JsonClass
 /**
  * Primary DTO representing a restaurant entry in the API response.
  *
- * This model contains only the subset of fields required for the assignment:
- * name, cuisines, rating, and address. It acts as a raw data model used in
- * the data layer before conversion to domain models for display.
- *
- * @property id Unique restaurant identifier (e.g., "10234")
- * @property name Restaurant name as returned from the API (may require sanitation)
- * @property cuisines List of cuisine types offered by the restaurant
- * @property rating Nullable rating information containing the star rating
- * @property address Nested object containing the restaurant’s full address
+ * @property id Unique identifier
+ * @property name Raw restaurant name
+ * @property cuisines List of cuisine DTOs
+ * @property rating Nested rating DTO (nullable)
+ * @property address Nested address DTO
+ * @property metadata Optional metadata block (may contain logo)
  */
 @JsonClass(generateAdapter = true)
 data class RestaurantDto(
@@ -22,5 +19,5 @@ data class RestaurantDto(
     val cuisines: List<CuisineDto>,
     val rating: RatingDto?,
     val address: AddressDto,
-    val metadata: MetadataDto? = null
+    val logoUrl: String? = null
 )

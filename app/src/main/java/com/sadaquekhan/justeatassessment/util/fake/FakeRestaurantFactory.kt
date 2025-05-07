@@ -18,7 +18,7 @@ object FakeRestaurantFactory {
         firstLine: String = "123 Fake St",
         city: String = "London",
         postalCode: String = "SW1A1AA",
-        logoUrl: String? = null // ✅ Add this
+        logoUrl: String? = null
     ): Restaurant {
         return Restaurant(
             id = id,
@@ -26,7 +26,7 @@ object FakeRestaurantFactory {
             cuisines = cuisines,
             rating = rating,
             address = Address(firstLine, city, postalCode),
-            logoUrl = logoUrl // ✅ Map it
+            logoUrl = logoUrl
         )
     }
 
@@ -38,7 +38,7 @@ object FakeRestaurantFactory {
         firstLine: String = "123 Fake St",
         city: String = "London",
         postalCode: String = "SW1A1AA",
-        logoUrl: String? = "https://cdn.test/logo.png"
+        logoUrl: String? = null
     ): RestaurantDto {
         return RestaurantDto(
             id = id,
@@ -50,9 +50,7 @@ object FakeRestaurantFactory {
                 city = city,
                 postalCode = postalCode
             ),
-            metadata = MetadataDto(
-                logo = logoUrl?.let { LogoDto(it) }
-            )
+            logoUrl = logoUrl
         )
     }
 }

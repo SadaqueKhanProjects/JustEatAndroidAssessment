@@ -1,5 +1,6 @@
 package com.sadaquekhan.justeatassessment.ui.components
 
+import android.graphics.Insets.add
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -11,7 +12,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import coil.compose.AsyncImage
+import coil.decode.GifDecoder
+import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
 import com.sadaquekhan.justeatassessment.R
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
@@ -32,13 +36,28 @@ fun RestaurantItem(
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .testTag("restaurant_item_${restaurant.id}")
     ) {
+        val context = LocalContext.current
+        val imageLoader = ImageLoader.Builder(context)
+            .components {
+                add(ImageDecoderDecoder.Factory()) // For API 28+
+                add(GifDecoder.Factory())          // Fallback for older APIs
+            }
+            .build()
+
         AsyncImage(
-            model = "https://images.unsplash.com/photo-1606788075761-0c02e5a93d30?auto=format&fit=crop&w=400&q=80",
-            contentDescription = "Direct load",
-            contentScale = ContentScale.Crop,
+            model = ImageRequest.Builder(context)
+                .data(restaurant.logoUrl)
+                .crossfade(true)
+                .build(),
+            imageLoader = imageLoader,
+            contentDescription = "${restaurant.name} logo",
+            contentScale = ContentScale.Fit,
+            placeholder = painterResource(id = R.drawable.ic_justeat_placeholder),
+            error = painterResource(id = R.drawable.ic_justeat_placeholder),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(120.dp)
+                .testTag("restaurant_logo_${restaurant.id}")
         )
 
 
