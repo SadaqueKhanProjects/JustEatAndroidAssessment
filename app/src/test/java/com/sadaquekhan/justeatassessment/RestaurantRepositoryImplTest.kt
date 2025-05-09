@@ -45,7 +45,7 @@ class RestaurantRepositoryImplTest {
     }
 
     @Test
-    fun `WHEN API returns 404 THEN throws IOException with proper message`() = runTest {
+    fun `WHEN API returns 404 THEN returns NetworkError with proper message`() = runTest {
         val fakeApi = FakeApiService().apply {
             mockResponse = Response.error(
                 404, "Not Found".toResponseBody("application/json".toMediaType())
@@ -55,19 +55,17 @@ class RestaurantRepositoryImplTest {
         val logger = FakeLogger()
         val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
 
-        try {
-            repo.getRestaurants("SW1A 1AA")
-            throw AssertionError("Expected IOException but got none")
-        } catch (e: IOException) {
-            assertThat(e.message).contains("404")
-            val errors = logger.getLogs().filter { it.isError }
-            assertThat(errors).isNotEmpty()
-            assertThat(errors[0].message).contains("API error 404")
-        }
+        val result = repo.getRestaurants("SW1A 1AA")
+
+        assertThat(result).isInstanceOf(RestaurantResult.NetworkError::class.java)
+        result as RestaurantResult.NetworkError
+        assertThat(result.message).contains("404")
+        assertThat(logger.getLogs().any { it.isError && "API error 404" in it.message }).isTrue()
     }
 
+
     @Test
-    fun `WHEN network is down THEN throws IOException with message`() = runTest {
+    fun `WHEN network is down THEN returns NetworkError with proper message`() = runTest {
         val fakeApi = FakeApiService().apply {
             shouldReturnError = true
             errorToThrow = IOException("Network down")
@@ -76,36 +74,36 @@ class RestaurantRepositoryImplTest {
         val logger = FakeLogger()
         val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
 
-        try {
-            repo.getRestaurants("E1 6AN")
-            throw AssertionError("Expected IOException due to network failure")
-        } catch (e: IOException) {
-            assertThat(e.message).contains("No internet connection")
-            assertThat(logger.getLogs().any { it.isError && "Network error" in it.message }).isTrue()
-        }
+        val result = repo.getRestaurants("E1 6AN")
+
+        assertThat(result).isInstanceOf(RestaurantResult.NetworkError::class.java)
+        result as RestaurantResult.NetworkError
+        assertThat(result.message).contains("No internet connection")
+        assertThat(logger.getLogs().any { it.isError && "Network error" in it.message }).isTrue()
     }
 
+
     @Test
-    fun `WHEN timeout occurs THEN throws SocketTimeoutException`() = runTest {
+    fun `WHEN timeout occurs THEN returns Timeout with proper message`() = runTest {
         val fakeApi = FakeApiService().apply {
             shouldReturnError = true
-            errorToThrow = SocketTimeoutException("Timeout")
+            errorToThrow = SocketTimeoutException("timeout")
         }
 
         val logger = FakeLogger()
         val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
 
-        try {
-            repo.getRestaurants("W1A 0AX")
-            throw AssertionError("Expected SocketTimeoutException due to timeout")
-        } catch (e: SocketTimeoutException) {
-            assertThat(e.message).contains("timeout")
-            assertThat(logger.getLogs().any { it.isError && "Timeout" in it.message }).isTrue()
-        }
+        val result = repo.getRestaurants("W1A 0AX")
+
+        assertThat(result).isInstanceOf(RestaurantResult.Timeout::class.java)
+        result as RestaurantResult.Timeout
+        assertThat(result.message.lowercase()).contains("timeout")
+        assertThat(logger.getLogs().any { it.isError && "timeout" in it.message.lowercase() }).isTrue()
     }
 
+
     @Test
-    fun `WHEN API returns null THEN throws generic Exception`() = runTest {
+    fun `WHEN API returns null THEN returns UnknownError with proper message`() = runTest {
         val fakeApi = FakeApiService().apply {
             mockResponse = Response.success(null)
         }
@@ -113,14 +111,15 @@ class RestaurantRepositoryImplTest {
         val logger = FakeLogger()
         val repo = RestaurantRepositoryImpl(fakeApi, FakeRestaurantMapper(), logger)
 
-        try {
-            repo.getRestaurants("EC2A 3AR")
-            throw AssertionError("Expected generic exception but got none")
-        } catch (e: Exception) {
-            assertThat(e.message).contains("Something went wrong")
-            assertThat(logger.getLogs().any { it.isError && "Unexpected error" in it.message }).isTrue()
-        }
+        val result = repo.getRestaurants("EC2A 3AR")
+
+        assertThat(result).isInstanceOf(RestaurantResult.UnknownError::class.java)
+        result as RestaurantResult.UnknownError
+        assertThat(result.message).contains("empty response")
+
+        assertThat(logger.getLogs().any { it.isError && "Null response body" in it.message }).isTrue()
     }
+
 
     @Test
     fun `WHEN postcode has space THEN ensure compact format is passed to repository`() = runTest {

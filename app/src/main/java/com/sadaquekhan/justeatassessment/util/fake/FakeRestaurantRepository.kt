@@ -4,6 +4,7 @@ import com.sadaquekhan.justeatassessment.data.repository.IRestaurantRepository
 import com.sadaquekhan.justeatassessment.domain.model.Restaurant
 import com.sadaquekhan.justeatassessment.domain.result.RestaurantResult
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 
 /**
  * Fake repository to simulate API responses in unit tests.
@@ -26,21 +27,23 @@ class FakeRestaurantRepository : IRestaurantRepository {
     var errorToThrow: Throwable = Exception("Simulated error")
 
     override suspend fun getRestaurants(postcode: String): RestaurantResult {
-        lastRequestedPostcode = postcode.trim().replace("\\s+".toRegex(), "").uppercase()
-        delay(delayMillis)
+        return withContext(kotlinx.coroutines.Dispatchers.IO) {
+            lastRequestedPostcode = postcode.trim().replace("\\s+".toRegex(), "").uppercase()
+            delay(delayMillis)
 
-        // Throw error if flag is set
-        if (shouldReturnError) {
-            throw errorToThrow
-        }
+            if (shouldReturnError) {
+                throw errorToThrow
+            }
 
-        return when (returnType) {
-            RestaurantResultType.SUCCESS -> RestaurantResult.Success(mockRestaurants)
-            RestaurantResultType.NETWORK_ERROR -> RestaurantResult.NetworkError("Simulated network error")
-            RestaurantResultType.TIMEOUT -> RestaurantResult.Timeout("Simulated timeout")
-            RestaurantResultType.UNKNOWN_ERROR -> RestaurantResult.UnknownError("Simulated unknown error")
+            when (returnType) {
+                RestaurantResultType.SUCCESS -> RestaurantResult.Success(mockRestaurants)
+                RestaurantResultType.NETWORK_ERROR -> RestaurantResult.NetworkError("Simulated network error")
+                RestaurantResultType.TIMEOUT -> RestaurantResult.Timeout("Simulated timeout")
+                RestaurantResultType.UNKNOWN_ERROR -> RestaurantResult.UnknownError("Simulated unknown error")
+            }
         }
     }
+
 
     enum class RestaurantResultType {
         SUCCESS,

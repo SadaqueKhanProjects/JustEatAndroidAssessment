@@ -139,6 +139,9 @@ dependencies {
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.48'
 }
 
+
+
+
 // --- Kotlin Code Coverage ---
 kover {
     htmlReport {
@@ -162,14 +165,21 @@ kover {
 
     filters {
         classes {
-            excludes += listOf(
-                    "com.sadaquekhan.justeatassessment.*.Fake*",
-                    "com.sadaquekhan.justeatassessment.*.Test*",
+            excludes += [
+                    // Exclude all fake/test/mock classes
+                    "com.sadaquekhan.justeatassessment.util.fake.*",
+                    // Compose Preview + LiveLiterals
                     "*LiveLiterals*",
+                    "*PreviewKt*",
+                    // DTOs and models (optional)
                     "com.sadaquekhan.justeatassessment.data.dto.*",
                     "com.sadaquekhan.justeatassessment.domain.model.*",
-                    "com.sadaquekhan.justeatassessment.data.remote.dto.mapper.*"
-            )
+                    "com.sadaquekhan.justeatassessment.data.remote.dto.mapper.*",
+                    // Result sealed classes (optional, if needed)
+                    "com.sadaquekhan.justeatassessment.domain.result.*"
+            ]
         }
     }
 }
+
+

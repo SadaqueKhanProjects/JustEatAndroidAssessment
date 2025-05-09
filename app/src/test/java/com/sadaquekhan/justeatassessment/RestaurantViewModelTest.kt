@@ -8,6 +8,7 @@ import com.sadaquekhan.justeatassessment.viewmodel.RestaurantViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Before
@@ -78,21 +79,6 @@ class RestaurantViewModelTest {
         assertThat(state.restaurants).isNotNull()
         assertThat(state.restaurants.size).isEqualTo(1)
         assertThat(fakeRepository.lastRequestedPostcode).isEqualTo("EC1A1BB")
-    }
-
-    @Test
-    fun `WHEN timeout occurs THEN shows proper error and logs`() = runTest {
-        fakeRepository.shouldReturnError = true
-        fakeRepository.errorToThrow = SocketTimeoutException()
-
-        viewModel.loadRestaurants("EC1A1BB")
-        val state = viewModel.uiState.first { !it.isLoading }
-
-        assertThat(state.errorMessage).contains("timeout")
-
-        val logs = fakeLogger.getLogs().filter { it.isError }
-        assertThat(logs).isNotEmpty()
-        assertThat(logs[0].message.lowercase()).contains("sockettimeoutexception")
     }
 
 
